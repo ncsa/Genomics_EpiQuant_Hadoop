@@ -51,8 +51,8 @@ public class AssignJobs {
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
-    FileInputFormat.addInputPath(job, new Path("data"));
-    FileOutputFormat.setOutputPath(job, new Path("output"));
+    FileInputFormat.addInputPath(job, new Path(args[1]));
+    FileOutputFormat.setOutputPath(job, new Path(args[2]));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
   }
 }
