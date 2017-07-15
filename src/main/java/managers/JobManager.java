@@ -19,7 +19,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class JobManager {
-    public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, DoubleWritable[]>{
+    public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, DoubleArrayWritable>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             
@@ -42,20 +42,20 @@ public class JobManager {
             //         values[i - 1].set(Double.parseDouble(tokens[i]));
             //     }
             // }
-            context.write(rank, values);
+            DoubleArrayWritable output = new DoubleArrayWritable();
+            output.set(values);
+            context.write(rank, output);
         }
     }
 
-    public static class IntSumReducer extends Reducer<IntWritable,DoubleWritable[],IntWritable,DoubleArrayWritable> {
-        public void reduce(IntWritable key, DoubleWritable[] values, Context context) throws IOException, InterruptedException {
-            DoubleArrayWritable output = new DoubleArrayWritable();
-            output.set(values);
+    public static class IntSumReducer extends Reducer<IntWritable,DoubleArrayWritable,IntWritable,DoubleArrayWritable> {
+        public void reduce(IntWritable key, DoubleArrayWritable values, Context context) throws IOException, InterruptedException {
             // int sum = 0;
             // for (IntWritable val : values) {
             //   sum += val.get();
             // }
             // result.set(sum);
-            context.write(key, output);
+            context.write(key, values);
         }
     }
 
