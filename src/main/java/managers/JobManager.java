@@ -1,6 +1,6 @@
 package managers;
 
-// import assets.DoubleArrayWritable;
+import assets.DoubleArrayWritable;
 
 import java.io.IOException;
 // import java.io.BufferedReader;
@@ -46,14 +46,16 @@ public class JobManager {
         }
     }
 
-    public static class IntSumReducer extends Reducer<IntWritable,DoubleWritable[],IntWritable,DoubleWritable[]> {
+    public static class IntSumReducer extends Reducer<IntWritable,DoubleWritable[],IntWritable,DoubleArrayWritable> {
         public void reduce(IntWritable key, DoubleWritable[] values, Context context) throws IOException, InterruptedException {
+            DoubleArrayWritable output = new DoubleArrayWritable();
+            output.set(values);
             // int sum = 0;
             // for (IntWritable val : values) {
             //   sum += val.get();
             // }
             // result.set(sum);
-            context.write(key, values);
+            context.write(key, output);
         }
     }
 
@@ -65,7 +67,7 @@ public class JobManager {
         job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
         job.setOutputKeyClass(IntWritable.class);
-        job.setOutputValueClass(DoubleWritable.class);
+        job.setOutputValueClass(DoubleArrayWritable.class);
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("output"));
         job.waitForCompletion(true);
