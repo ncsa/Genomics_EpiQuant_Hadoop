@@ -40,7 +40,7 @@ public class DoubleArrayWritable extends ArrayWritable {
         int length = in.readInt();
         DoubleWritable[] dataTemp = new DoubleWritable[length];
         for (int i = 0; i < length; i++) {
-            dataTemp[i].set(in.readDouble());
+            dataTemp[i] = new DoubleWritable(in.readDouble());
         }
         this.data = dataTemp;
     }
