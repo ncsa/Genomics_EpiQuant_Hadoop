@@ -31,7 +31,7 @@ public class JobManager {
             // String line;
             DoubleWritable[] values = new DoubleWritable[5];
             for (int i = 0; i < 5; i++) {
-                values[i].set(r.nextDouble());
+                values[i] = new DoubleWritable(r.nextDouble());
             }
             // while ((line = buff.readLine()) != null) {
             //     System.out.println(line);
