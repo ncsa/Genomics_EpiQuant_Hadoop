@@ -53,6 +53,6 @@ public class AssignJobs {
     job.setOutputValueClass(IntWritable.class);
     FileInputFormat.addInputPath(job, new Path(args[1]));
     FileOutputFormat.setOutputPath(job, new Path(args[2]));
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
+    job.waitForCompletion(true);
   }
 }

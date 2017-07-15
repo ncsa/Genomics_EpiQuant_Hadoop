@@ -5,5 +5,6 @@ public class SemsHadoop {
         AssignJobs jobManager = new AssignJobs();
         jobManager.run(args);
         System.out.println("Hello World");
+        System.exit(0);
     }
 }
