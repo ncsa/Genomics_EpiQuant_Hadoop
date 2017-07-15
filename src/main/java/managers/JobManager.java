@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -42,8 +43,7 @@ public class JobManager {
             //         values[i - 1].set(Double.parseDouble(tokens[i]));
             //     }
             // }
-            DoubleArrayWritable output = new DoubleArrayWritable();
-            output.set(values);
+            DoubleArrayWritable output = new DoubleArrayWritable(values);
             context.write(rank, output);
         }
     }
@@ -57,7 +57,7 @@ public class JobManager {
             // result.set(sum);
             Random r = new Random();
             key.set(r.nextInt());
-            DoubleWritable[] vals = (DoubleWritable[]) values.get();
+            DoubleWritable[] vals = values.data;
             for (DoubleWritable val: vals) {
                 context.write(key, val);
             }
