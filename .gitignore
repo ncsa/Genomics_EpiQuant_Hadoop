@@ -3,3 +3,5 @@ target/
 .project
 .settings/
 .vscode/
+*.jar
+dependency-reduced-pom.xml
