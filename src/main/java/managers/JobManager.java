@@ -33,9 +33,9 @@ public class JobManager {
             while ((line = buff.readLine()) != null) {
                 System.out.println(line);
                 tokens = line.split("\\t");
-                System.out.println(tokens);
                 values = new DoubleWritable[tokens.length - 1];
                 for (int i = 1; i < tokens.length; i++) {
+                    System.out.println(tokens[i]);
                     values[i - 1].set(Double.parseDouble(tokens[i]));
                 }
             }
