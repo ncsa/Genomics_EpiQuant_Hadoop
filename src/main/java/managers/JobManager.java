@@ -25,7 +25,7 @@ public class JobManager {
             
             IntWritable rank = new IntWritable();
             Random r = new Random();
-            rank.set(1);
+            rank.set(r.nextInt());
 
             // String[] tokens;
             // String line;
@@ -55,6 +55,8 @@ public class JobManager {
             //   sum += val.get();
             // }
             // result.set(sum);
+            Random r = new Random();
+            key.set(r.nextInt());
             DoubleWritable[] vals = (DoubleWritable[]) values.get();
             for (DoubleWritable val: vals) {
                 context.write(key, val);
