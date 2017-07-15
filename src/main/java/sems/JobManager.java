@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class AssignJobs {
+public class JobManager {
 
   public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{
 
@@ -45,14 +45,14 @@ public class AssignJobs {
   public void run(String[] args) throws Exception {
     Configuration conf = new Configuration();
     Job job = Job.getInstance(conf, "word count");
-    job.setJarByClass(AssignJobs.class);
+    job.setJarByClass(JobManager.class);
     job.setMapperClass(TokenizerMapper.class);
     job.setCombinerClass(IntSumReducer.class);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
     FileInputFormat.addInputPath(job, new Path(args[1]));
-    FileOutputFormat.setOutputPath(job, new Path(args[2]));
+    FileOutputFormat.setOutputPath(job, new Path("output"));
     job.waitForCompletion(true);
   }
 }
