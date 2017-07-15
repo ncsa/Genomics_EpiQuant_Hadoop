@@ -56,13 +56,11 @@ public class JobManager {
             // }
             // result.set(sum);
             Text output = new Text();
-            String [] vals = values.toStrings();
-            String outputString = "";
-            for (String val: vals) {
-                outputString += val + "\t";
+            DoubleWritable[] vals = (DoubleWritable[]) values.get();
+            for (DoubleWritable val: vals) {
+                output.set(val.toString());
+                context.write(key, output);
             }
-            output.set(outputString);
-            context.write(key, output);
         }
     }
 
