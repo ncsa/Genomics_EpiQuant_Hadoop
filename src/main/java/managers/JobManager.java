@@ -25,13 +25,15 @@ public class JobManager {
             
             IntWritable rank = new IntWritable();
             Random r = new Random();
-            rank.set(r.nextInt(4));
+            rank.set(1);
 
             String[] tokens;
             String line;
             DoubleWritable[] values = new DoubleWritable[1];
             while ((line = buff.readLine()) != null) {
+                System.out.println(line);
                 tokens = line.split("\\t");
+                System.out.println(tokens);
                 values = new DoubleWritable[tokens.length - 1];
                 for (int i = 1; i < tokens.length; i++) {
                     values[i - 1].set(Double.parseDouble(tokens[i]));
