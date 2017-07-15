@@ -59,7 +59,7 @@ public class JobManager {
             String [] vals = values.toStrings();
             String outputString = "";
             for (String val: vals) {
-                outputString += val;
+                outputString += val + "\t";
             }
             output.set(outputString);
             context.write(key, output);
@@ -71,6 +71,8 @@ public class JobManager {
         Job job = Job.getInstance(conf, "word count");
         job.setJarByClass(JobManager.class);
         job.setMapperClass(TokenizerMapper.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(DoubleArrayWritable.class);
         job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
         job.setOutputKeyClass(IntWritable.class);
