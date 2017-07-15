@@ -48,14 +48,21 @@ public class JobManager {
         }
     }
 
-    public static class IntSumReducer extends Reducer<IntWritable,DoubleArrayWritable,IntWritable,DoubleArrayWritable> {
+    public static class IntSumReducer extends Reducer<IntWritable,DoubleArrayWritable,IntWritable,Text> {
         public void reduce(IntWritable key, DoubleArrayWritable values, Context context) throws IOException, InterruptedException {
             // int sum = 0;
             // for (IntWritable val : values) {
             //   sum += val.get();
             // }
             // result.set(sum);
-            context.write(key, values);
+            Text output = new Text();
+            String [] vals = values.toStrings();
+            String outputString = "";
+            for (String val: vals) {
+                outputString += val;
+            }
+            output.set(outputString);
+            context.write(key, output);
         }
     }
 
@@ -67,7 +74,7 @@ public class JobManager {
         job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
         job.setOutputKeyClass(IntWritable.class);
-        job.setOutputValueClass(DoubleArrayWritable.class);
+        job.setOutputValueClass(Text.class);
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("output"));
         job.waitForCompletion(true);
