@@ -1,6 +1,8 @@
 package sems;
 
-public class SemsHadoop {
+import managers.JobManager;
+
+public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         JobManager jobManager = new JobManager();
         jobManager.run(args);
