@@ -43,7 +43,7 @@ public class JobManager {
             return out;
         }
     }
-    
+
     public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, ArrayWritable>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
@@ -62,13 +62,9 @@ public class JobManager {
         }
     }
 
-    public static class IntSumReducer extends Reducer<IntWritable, ArrayWritable, IntWritable, DoubleWritable> {
+    public static class IntSumReducer extends Reducer<IntWritable, ArrayWritable, IntWritable, ArrayWritable> {
         public void reduce(IntWritable key, ArrayWritable values, Context context) throws IOException, InterruptedException {
-            Writable[] writables = values.get();
-            for (Writable writable: writables) {
-                DoubleWritable doubleWritable = (DoubleWritable)writable;
-                context.write(key, doubleWritable);
-            }
+            context.write(key, values);
         }
     }
 
