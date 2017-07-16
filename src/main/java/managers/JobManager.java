@@ -1,12 +1,9 @@
 package managers;
 
-import assets.DoubleArrayWritable;
-
 import java.io.IOException;
 // import java.io.BufferedReader;
 // import java.io.StringReader;
 import java.util.Random;
-import java.util.Iterator;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -22,6 +19,20 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class JobManager {
+    public static class DoubleArrayWritable extends ArrayWritable {
+        public DoubleArrayWritable() {
+            super(DoubleWritable.class);
+        }
+
+        public DoubleArrayWritable(double[] doubles) {
+            super(DoubleWritable.class);
+            DoubleWritable[] doubleWritables = new DoubleWritable[doubles.length];
+            for (int i = 0; i < doubles.length; i++) {
+                doubleWritables[i] = new DoubleWritable(doubles[i]);
+            }
+            set(doubleWritables);
+        }
+    }
     public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, ArrayWritable>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
