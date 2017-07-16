@@ -26,11 +26,11 @@ public class JobManager {
                 String output = tokens[1];
                 for (int i = 2; i < tokens.length; i++) {
                     output += "," + tokens[i];
-                    if (tokens.length == 2) {
-                        context.write(new IntWritable(0), new Text(output));
-                    } else {
-                        context.write(new IntWritable(1), new Text(output));
-                    }
+                }
+                if (tokens.length == 2) {
+                    context.write(new IntWritable(0), new Text(output));
+                } else {
+                    context.write(new IntWritable(1), new Text(output));
                 }
 			}
         }
