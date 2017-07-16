@@ -30,19 +30,11 @@ public class JobManager {
 
             // String[] tokens;
             // String line;
-            DoubleWritable[] values = new DoubleWritable[5];
+            double[] values = new double[5];
             for (int i = 0; i < 5; i++) {
-                values[i] = new DoubleWritable(r.nextDouble());
+                values[i] = r.nextDouble();
             }
-            // while ((line = buff.readLine()) != null) {
-            //     System.out.println(line);
-            //     tokens = line.split("\\t");
-            //     values = new DoubleWritable[tokens.length - 1];
-            //     for (int i = 1; i < tokens.length; i++) {
-            //         System.out.println(tokens[i]);
-            //         values[i - 1].set(Double.parseDouble(tokens[i]));
-            //     }
-            // }
+
             DoubleArrayWritable output = new DoubleArrayWritable(values);
             context.write(rank, output);
         }
@@ -57,9 +49,10 @@ public class JobManager {
             // result.set(sum);
             Random r = new Random();
             key.set(r.nextInt());
-            DoubleWritable[] vals = values.data;
-            for (DoubleWritable val: vals) {
-                context.write(key, val);
+            double[] array = values.get();
+            for (double val: array) {
+                DoubleWritable output = new DoubleWritable(val);
+                context.write(key, output);
             }
         }
     }
