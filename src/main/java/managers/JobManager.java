@@ -3,11 +3,9 @@ package managers;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -20,17 +18,17 @@ public class JobManager {
     public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-            Random r = new Random();
 
             String[] tokens;
             String line;
 			while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
-                String out = tokens[1];
-                for (int i = 2; i < tokens.length; i++) {
-                    out += "," + tokens[i];
+                if (tokens.length == 2) {
+                    context.write(new IntWritable(0), new Text(line));
+                } else {
+                    context.write(new IntWritable(1), new Text(line));
                 }
-                context.write(new IntWritable(r.nextInt()), new Text(out));
+                
 			}
         }
     }
