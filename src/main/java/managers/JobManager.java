@@ -3,6 +3,7 @@ package managers;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -15,9 +16,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class JobManager {
-    public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, Text>{
+    public static class TokenizerMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
+            Random r = new Random();
             String[] tokens;
             String line;
 
@@ -28,16 +30,16 @@ public class JobManager {
                     output += "," + tokens[i];
                 }
                 if (tokens.length == 2) {
-                    context.write(new IntWritable(0), new Text(output));
+                    context.write(new Text("0"), new Text(output));
                 } else {
-                    context.write(new IntWritable(1), new Text(output));
+                    context.write(new Text("1:" + r.nextInt(4)), new Text(output));
                 }
 			}
         }
     }
 
-    public static class IntSumReducer extends Reducer<IntWritable, Text, IntWritable, Text> {
-        public void reduce(IntWritable key, Text values, Context context) throws IOException, InterruptedException {
+    public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
+        public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
             context.write(key, values);
         }
     }
@@ -47,9 +49,9 @@ public class JobManager {
         Job job = Job.getInstance(conf, "job manager");
         job.setJarByClass(JobManager.class);
         
-        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
-        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapperClass(TokenizerMapper.class);
