@@ -8,6 +8,7 @@ import java.util.Random;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -16,7 +17,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class JobManager {
-    public static class TokenizerMapper extends Mapper<Object, Text, Text, Text>{
+    public static class JobSplitMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             Random r = new Random();
@@ -32,13 +33,13 @@ public class JobManager {
                 if (tokens.length == 2) {
                     context.write(new Text("0"), new Text(output));
                 } else {
-                    context.write(new Text("1:" + r.nextInt(4)), new Text(output));
+                    context.write(new Text("1:" + r.nextInt(10)), new Text(output));
                 }
 			}
         }
     }
 
-    public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
+    public static class LinRegReducer extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
             context.write(key, values);
         }
@@ -54,9 +55,9 @@ public class JobManager {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(TokenizerMapper.class);
-        job.setCombinerClass(IntSumReducer.class);
-        job.setReducerClass(IntSumReducer.class);
+        job.setMapperClass(JobSplitMapper.class);
+        job.setCombinerClass(LinRegReducer.class);
+        job.setReducerClass(LinRegReducer.class);
 
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("output"));
