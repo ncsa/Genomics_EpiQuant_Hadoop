@@ -24,15 +24,26 @@ public class JobManager {
             super(DoubleWritable.class);
         }
 
-        public DoubleArrayWritable(double[] doubles) {
-            super(DoubleWritable.class);
-            DoubleWritable[] doubleWritables = new DoubleWritable[doubles.length];
-            for (int i = 0; i < doubles.length; i++) {
-                doubleWritables[i] = new DoubleWritable(doubles[i]);
+        public DoubleArrayWritable(DoubleWritable[] doubleWritables) {
+            super(DoubleWritable.class, doubleWritables);
+        }
+
+        @Override
+        public DoubleWritable[] get() {
+            return (DoubleWritable[]) super.get();
+        }
+
+        @Override
+        public String toString() {
+            DoubleWritable[] doubleWritables = get();
+            String out = "" + doubleWritables[0].get();
+            for (int i = 1; i < doubleWritables.length; i++) {
+                out += ", " + doubleWritables[i].get();
             }
-            set(doubleWritables);
+            return out;
         }
     }
+    
     public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, ArrayWritable>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
@@ -41,12 +52,12 @@ public class JobManager {
 
             // String[] tokens;
             // String line;
-            double[] values = new double[5];
+            DoubleWritable[] values = new DoubleWritable[5];
             for (int i = 0; i < values.length; i++) {
-                values[i] = r.nextDouble();
+                values[i] = new DoubleWritable(r.nextDouble());
             }
             for (int i = 0; i < 3; i++) {
-                context.write(new IntWritable(r.nextInt()), new DoubleArrayWritable(values));
+                context.write(new IntWritable(r.nextInt(4)), new DoubleArrayWritable(values));
             }
         }
     }
