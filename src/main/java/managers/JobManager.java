@@ -24,9 +24,9 @@ public class JobManager {
 			while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
                 if (tokens.length == 2) {
-                    context.write(new IntWritable(0), new Text(tokens[1]));
+                    context.write(new IntWritable(0), new Text(line));
                 } else {
-                    context.write(new IntWritable(1), new Text(tokens[1]));
+                    context.write(new IntWritable(1), new Text(line));
                 }
 			}
         }
