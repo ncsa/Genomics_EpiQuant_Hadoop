@@ -28,6 +28,7 @@ public class DoubleArrayWritable implements Writable {
         this.array = input;
     }
 
+    @Override
     public void write(DataOutput out) throws IOException {
         out.writeInt(this.length);
         for (double value: this.array) {
@@ -35,6 +36,7 @@ public class DoubleArrayWritable implements Writable {
         }
     }
 
+    @Override
     public void readFields(DataInput in) throws IOException {
         this.length = in.readInt();
         this.array = new double[length];
