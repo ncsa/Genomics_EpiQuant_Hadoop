@@ -30,9 +30,9 @@ public class JobManager {
 
             // String[] tokens;
             // String line;
-            double[] values = new double[5];
+            DoubleWritable[] values = new DoubleWritable[5];
             for (int i = 0; i < 5; i++) {
-                values[i] = r.nextDouble();
+                values[i] = new DoubleWritable(r.nextDouble());
             }
 
             DoubleArrayWritable output = new DoubleArrayWritable(values);
@@ -49,9 +49,9 @@ public class JobManager {
             // result.set(sum);
             Random r = new Random();
             key.set(r.nextInt());
-            double[] array = values.get();
-            for (double val: array) {
-                DoubleWritable output = new DoubleWritable(val);
+            DoubleWritable[] array = values.get();
+            for (DoubleWritable val: array) {
+                DoubleWritable output = new DoubleWritable(val.get());
                 context.write(key, output);
             }
         }

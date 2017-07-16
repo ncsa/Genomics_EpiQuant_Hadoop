@@ -4,44 +4,59 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 public class DoubleArrayWritable implements Writable {
-    private int length;
-    private double[] array;
+    private IntWritable length;
+    private DoubleWritable[] array;
 
     public DoubleArrayWritable() {
         
     }
 
-    public DoubleArrayWritable(double[] input) {
-        this.length = input.length;
-        this.array = input;
+    public DoubleArrayWritable(DoubleWritable[] input) {
+        this.array = new DoubleWritable[input.length];
+        for (int i = 0; i < input.length; i++) {
+            this.array[i] = new DoubleWritable(input[i].get());
+        }
+        this.length = new IntWritable(this.array.length);
     }
 
-    public double[] get() {
-        return this.array;
+    public DoubleWritable[] get() {
+        DoubleWritable[] out = new DoubleWritable[this.array.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = new DoubleWritable(this.array[i].get());
+        }
+        return out;
     }
 
-    public void set(double[] input) {
-        this.length = input.length;
-        this.array = input;
+    public void set(DoubleWritable[] input) {
+        this.array = new DoubleWritable[input.length];
+        for (int i = 0; i < input.length; i++) {
+            this.array[i] = new DoubleWritable(input[i].get());
+        }
+        this.length = new IntWritable(this.array.length);
     }
 
     @Override
     public void write(DataOutput out) throws IOException {
-        out.writeInt(this.length);
-        for (double value: this.array) {
-            out.writeDouble(value);
+        this.length.write(out);
+        for (int i = 0; i < this.array.length; i++) {
+            this.array[i].write(out);
         }
     }
 
     @Override
     public void readFields(DataInput in) throws IOException {
-        this.length = in.readInt();
-        this.array = new double[length];
-        for (int i = 0; i < this.length; i++) {
-            this.array[i] = in.readDouble();
+        this.length.readFields(in);
+        this.array = new DoubleWritable[this.length.get()];
+        for (int i = 0; i < this.array.length; i++) {
+            DoubleWritable getVar = new DoubleWritable();
+            getVar.readFields(in);
+            this.array[i] = new DoubleWritable(getVar.get());
         }
     }
 
