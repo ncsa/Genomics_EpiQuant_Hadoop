@@ -18,17 +18,16 @@ public class JobManager {
     public static class TokenizerMapper extends Mapper<Object, Text, IntWritable, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-
             String[] tokens;
             String line;
+
 			while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
                 if (tokens.length == 2) {
-                    context.write(new IntWritable(0), new Text(line));
+                    context.write(new IntWritable(0), new Text(tokens[1]));
                 } else {
-                    context.write(new IntWritable(1), new Text(line));
+                    context.write(new IntWritable(1), new Text(tokens[1]));
                 }
-                
 			}
         }
     }
