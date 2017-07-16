@@ -1,4 +1,5 @@
 git pull
+mvn clean
 mvn compile
 mvn package
 hadoop fs -rm -r output
