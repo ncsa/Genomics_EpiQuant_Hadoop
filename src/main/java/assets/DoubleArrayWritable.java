@@ -37,9 +37,9 @@ public class DoubleArrayWritable implements Writable {
 
     public void readFields(DataInput in) throws IOException {
         this.length = in.readInt();
-        array = new double[length];
-        for (int i = 0; i < length; i++) {
-            array[i] = in.readDouble();
+        this.array = new double[length];
+        for (int i = 0; i < this.length; i++) {
+            this.array[i] = in.readDouble();
         }
     }
 
