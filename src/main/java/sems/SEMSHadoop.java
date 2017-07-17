@@ -19,11 +19,9 @@ public class SEMSHadoop {
             // try {
                 System.out.println(phenoList.get(i));
                 StringTokenizer tokens = new StringTokenizer(phenoList.get(i));
-                String y = tokens.nextToken();
-                // for (int j = 1; j < 5; j++) {
-                //     y += "\t" + tokens.nextToken();
-                // }
-                System.out.println(y);
+                while(tokens.hasMoreTokens()) {
+                    System.out.println(tokens.nextToken());
+                }
             // } catch (Exception e) {
             //     System.err.println("Could not split phenotype into tokens.");
             //     System.exit(1);
