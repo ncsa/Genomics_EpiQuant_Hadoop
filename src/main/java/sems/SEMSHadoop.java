@@ -41,14 +41,19 @@ public class SEMSHadoop {
         current = System.nanoTime();
         rawSeconds = (current - start) / 1000000000;
         nSeconds = ((current - start) / 1000000000) % 60;
+        nMinutes = (rawSeconds / 60) % 60;
+        hours = rawSeconds / 60 / 60;
+
         if (nSeconds < 10) {
             seconds = "0" + nSeconds;
+        } else {
+            seconds = String.valueOf(nSeconds);
         }
-        nMinutes = (rawSeconds / 60) % 60;
         if (nMinutes < 10) {
             minutes = "0" + nMinutes;
+        } else {
+            minutes = String.valueOf(nMinutes);
         }
-        hours = rawSeconds / 60 / 60;
         System.out.println("Elapsed Time: " + hours + "h " + minutes + "m " + seconds + "s [Status: Running...]");
     }
 
