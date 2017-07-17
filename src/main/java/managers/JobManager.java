@@ -33,7 +33,7 @@ public class JobManager {
                     while (tokens.hasMoreTokens()) {
                         out += "\t" + tokens.nextToken();
                     }
-                    context.write(new Text("" + r.nextInt(4)), new Text(out));
+                    context.write(new Text("0"), new Text(out));
                 } catch (Exception e) {
                     System.err.println("Could not parse a line.");
                 }
