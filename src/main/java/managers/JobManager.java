@@ -27,12 +27,16 @@ public class JobManager {
             String line;
 
 			while ((line = buff.readLine()) != null) {
-                tokens = line.split("\\t");
-                String out = tokens[0];
-                for (int i = 1; i < 5; i++) {
-                    out += "\t" + tokens[i];
+                try {
+                    tokens = line.split("\\t");
+                    String out = tokens[0];
+                    for (int i = 1; i < 5; i++) {
+                        out += "\t" + tokens[i];
+                    }
+                    context.write(new Text("" + r.nextInt(4)), new Text(out));
+                } catch (Exception e) {
+                    System.err.println("Could not parse a line");
                 }
-                context.write(new Text("" + r.nextInt(4)), new Text(out));
 			}
         }
     }
