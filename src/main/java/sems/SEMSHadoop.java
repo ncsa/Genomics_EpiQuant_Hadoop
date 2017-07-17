@@ -74,7 +74,7 @@ public class SEMSHadoop {
             minutes = String.valueOf(nMinutes);
         }
         if (finished) {
-            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Finishing...] [Jobs = " + size + "]" + message);
+            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Finish... ] [Jobs = " + size + "]" + message);
         } else {
             System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...] [Jobs = " + size + "]" + message);
         }
