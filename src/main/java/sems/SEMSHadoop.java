@@ -16,7 +16,7 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
         for (int i = 0; i < phenoList.size(); i++) {
-            try {
+            // try {
                 System.out.println(phenoList.get(i));
                 StringTokenizer tokens = new StringTokenizer(phenoList.get(i));
                 String y = tokens.nextToken();
@@ -24,10 +24,10 @@ public class SEMSHadoop {
                     y += "\t" + tokens.nextToken();
                 }
                 System.out.println(y);
-            } catch (Exception e) {
-                System.err.println("Could not split phenotype into tokens.");
-                System.exit(1);
-            }
+            // } catch (Exception e) {
+            //     System.err.println("Could not split phenotype into tokens.");
+            //     System.exit(1);
+            // }
         }
         System.exit(0);
         JobManager jobManager = new JobManager();
