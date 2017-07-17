@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -23,15 +24,14 @@ public class JobManager {
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             Random r = new Random();
-            String[] tokens;
             String line;
 
 			while ((line = buff.readLine()) != null) {
                 try {
-                    tokens = line.split("\\t");
-                    String out = tokens[0];
-                    for (int i = 1; i < 5; i++) {
-                        out += "\t" + tokens[i];
+                    StringTokenizer tokens = new StringTokenizer(line);
+                    String out = tokens.nextToken();
+                    while (tokens.hasMoreTokens()) {
+                        out += "\t" + tokens.nextToken();
                     }
                     context.write(new Text("" + r.nextInt(4)), new Text(out));
                 } catch (Exception e) {

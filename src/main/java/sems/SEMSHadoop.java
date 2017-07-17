@@ -16,18 +16,17 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
         for (int i = 0; i < phenoList.size(); i++) {
-            // try {
+            try {
                 System.out.println(phenoList.get(i));
                 StringTokenizer tokens = new StringTokenizer(phenoList.get(i));
                 while(tokens.hasMoreTokens()) {
                     System.out.println(tokens.nextToken());
                 }
-            // } catch (Exception e) {
-            //     System.err.println("Could not split phenotype into tokens.");
-            //     System.exit(1);
-            // }
+            } catch (Exception e) {
+                System.err.println("Could not split phenotype into tokens.");
+                System.exit(1);
+            }
         }
-        System.exit(0);
         JobManager jobManager = new JobManager();
         jobManager.run(args);
         System.out.println("Hello World");
