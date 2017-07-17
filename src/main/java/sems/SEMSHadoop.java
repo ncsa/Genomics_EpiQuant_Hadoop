@@ -18,19 +18,30 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
+        ArrayList<int[]> splits = new ArrayList<int[]>();
+
+        // Submit jobs by to the job list.
         JobManager jobManager = new JobManager();
         for (int i = 0; i < phenoList.size(); i++) {
             System.out.println("Adding Job: " + i);
-            jobList.add(jobManager.run(args));
+            splits.add(new int[2]);
+            splits.get(i)[0] = i; // Phenotype number
+            splits.get(i)[1] = 1; // Split number
+            jobList.add(jobManager.run(args, phenoList.get(i), splits.get(i)[0], splits.get(i)[1]));
         }
+
         boolean running = true;
         long start = System.nanoTime();
+
+        // Track running jobs until none are left.
         while (running) {
             runningTime(start, jobList.size(), false);
+            // Remove jobs if completed.
             for (int i = 0; i < jobList.size(); i++) {
                 if (jobList.get(i).isComplete()) {
                     System.out.println("Removing Job: " + i);
                     jobList.remove(i);
+                    splits.remove(i);
                 }
             }
             if (jobList.isEmpty()) {

@@ -48,8 +48,9 @@ public class JobManager {
         }
     }
 
-    public Job run(String[] args) throws Exception {
+    public Job run(String[] args, String y, int phenotype, int split) throws Exception {
         Configuration conf = new Configuration();
+        conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
         job.setJarByClass(JobManager.class);
         
@@ -63,7 +64,7 @@ public class JobManager {
         job.setReducerClass(MaxSigReducer.class);
 
         FileInputFormat.addInputPath(job, new Path(args[1]));
-        FileOutputFormat.setOutputPath(job, new Path("output"));
+        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
         job.submit();
         return job;
