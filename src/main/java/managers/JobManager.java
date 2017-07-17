@@ -16,25 +16,17 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 public class JobManager {
     public static class JobSplitMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             Random r = new Random();
-            String[] tokens;
             String line;
 
 			while ((line = buff.readLine()) != null) {
-                tokens = line.split("\\t");
-                String output = tokens[1];
-                for (int i = 2; i < tokens.length; i++) {
-                    output += "," + tokens[i];
-                }
-                if (tokens.length == 2) {
-                    context.write(new Text("0"), new Text(output));
-                } else {
-                    context.write(new Text("1:" + r.nextInt(10)), new Text(output));
-                }
+                context.write(new Text("" + r.nextInt()), new Text(line));
 			}
         }
     }
