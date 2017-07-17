@@ -28,7 +28,7 @@ public class JobManager {
 
 			while ((line = buff.readLine()) != null) {
                 try {
-                    StringTokenizer tokens = new StringTokenizer(line);
+                    StringTokenizer tokens = new StringTokenizer(line, "\t");
                     String out = tokens.nextToken();
                     while (tokens.hasMoreTokens()) {
                         out += "\t" + tokens.nextToken();

@@ -18,7 +18,7 @@ public class SEMSHadoop {
         for (int i = 0; i < phenoList.size(); i++) {
             try {
                 System.out.println(phenoList.get(i));
-                StringTokenizer tokens = new StringTokenizer(phenoList.get(i));
+                StringTokenizer tokens = new StringTokenizer(phenoList.get(i), "\t");
                 while(tokens.hasMoreTokens()) {
                     System.out.println(tokens.nextToken());
                 }
