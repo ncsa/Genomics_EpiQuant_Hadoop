@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -17,12 +18,11 @@ public class SEMSHadoop {
         for (int i = 0; i < phenoList.size(); i++) {
             try {
                 System.out.println(phenoList.get(i));
-                String[] tokens = phenoList.get(i).split("\\t");
-                String y = tokens[0];
-                // for (int j = 1; j < 5; j++) {
-                //     System.out.println(tokens[j]);
-                //     y += "\t" + tokens[j];
-                // }
+                StringTokenizer tokens = new StringTokenizer(phenoList.get(i));
+                String y = tokens.nextToken();
+                for (int j = 1; j < 5; j++) {
+                    y += "\t" + tokens.nextToken();
+                }
                 System.out.println(y);
             } catch (Exception e) {
                 System.err.println("Could not split phenotype into tokens.");
