@@ -19,7 +19,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class JobManager {
-    public static class JobSplitMapper extends Mapper<Object, Text, Text, Text>{
+    public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             Random r = new Random();
@@ -35,13 +35,13 @@ public class JobManager {
                     }
                     context.write(new Text("" + r.nextInt(4)), new Text(out));
                 } catch (Exception e) {
-                    System.err.println("Could not parse a line");
+                    System.err.println("Could not parse a line.");
                 }
 			}
         }
     }
 
-    public static class LinRegReducer extends Reducer<Text, Text, Text, Text> {
+    public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
             context.write(key, values);
         }
@@ -57,9 +57,9 @@ public class JobManager {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(JobSplitMapper.class);
-        job.setCombinerClass(LinRegReducer.class);
-        job.setReducerClass(LinRegReducer.class);
+        job.setMapperClass(LinRegMapper.class);
+        job.setCombinerClass(MaxSigReducer.class);
+        job.setReducerClass(MaxSigReducer.class);
 
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("output"));
