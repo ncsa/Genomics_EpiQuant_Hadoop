@@ -16,8 +16,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.zookeeper.ZooKeeper;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
 public class JobManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{

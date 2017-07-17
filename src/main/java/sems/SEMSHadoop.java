@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -15,8 +16,17 @@ import org.apache.hadoop.conf.Configuration;
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
-        for (int i = 0; i < phenoList.size(); i++) {
-            System.out.println(phenoList.get(i));
+        boolean running = true;
+        long start = System.nanoTime();
+        int iterations = 0;
+        while (running) {
+            iterations++;
+            long current = System.nanoTime();
+            System.out.println("Elapsed Time: " + ((current - start) / 1000000000) + "s [Status: Running...]");
+            if (iterations > 5) {
+                running = false;
+            }
+            TimeUnit.SECONDS.sleep(10);
         }
         System.exit(0);
         JobManager jobManager = new JobManager();
