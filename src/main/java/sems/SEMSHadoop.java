@@ -16,8 +16,9 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
         for (int i = 0; i < phenoList.size(); i++) {
-            System.out.println(phenoList.size());
+            System.out.println(phenoList.get(i));
         }
+        System.exit(0);
         JobManager jobManager = new JobManager();
         jobManager.run(args);
         System.out.println("Hello World");
