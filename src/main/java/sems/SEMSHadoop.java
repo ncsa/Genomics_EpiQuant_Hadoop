@@ -19,14 +19,17 @@ public class SEMSHadoop {
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
         JobManager jobManager = new JobManager();
-        jobList.add(jobManager.run(args));
+        for (int i = 0; i < phenoList.size(); i++) {
+            System.out.println("Adding Job: " + i);
+            jobList.add(jobManager.run(args));
+        }
         boolean running = true;
         long start = System.nanoTime();
         while (running) {
-            runningTime(start, jobList.size());
+            runningTime(start, jobList.size(), false);
             for (int i = 0; i < jobList.size(); i++) {
                 if (jobList.get(i).isComplete()) {
-                    System.out.print("Removing Job: " + i);
+                    System.out.println("Removing Job: " + i);
                     jobList.remove(i);
                 }
             }
@@ -35,11 +38,11 @@ public class SEMSHadoop {
             }
             TimeUnit.SECONDS.sleep(2);
         }
-        System.out.println("Hello World");
+        runningTime(start, jobList.size(), true);
         System.exit(0);
     }
 
-    public static void runningTime(long start, int size) {
+    public static void runningTime(long start, int size, boolean finished) {
         long current, rawSeconds, nSeconds, nMinutes, hours;
         String seconds, minutes;
         
@@ -59,7 +62,11 @@ public class SEMSHadoop {
         } else {
             minutes = String.valueOf(nMinutes);
         }
-        System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...] [Jobs = " + size + "]");
+        if (finished) {
+            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Finishing...] [Jobs = " + size + "]");
+        } else {
+            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...] [Jobs = " + size + "]");
+        }
     }
 
     public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
