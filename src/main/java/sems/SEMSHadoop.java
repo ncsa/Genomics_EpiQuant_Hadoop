@@ -15,10 +15,9 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
         for (int i = 0; i < phenoList.size(); i++) {
-            String phenotype = phenoList.get(i);
             try {
-                String[] tokens = phenotype.split("\\t");
-                System.out.println(phenotype);
+                System.out.println(phenoList.get(i));
+                String[] tokens = phenoList.get(i).split("\\t");
                 String y = tokens[0];
                 for (int j = 1; j < 5; j++) {
                     System.out.println(tokens[j]);
