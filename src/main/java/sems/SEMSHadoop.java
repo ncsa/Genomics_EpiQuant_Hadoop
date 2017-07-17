@@ -20,9 +20,10 @@ public class SEMSHadoop {
                 String[] tokens = phenotype.split("\\t");
                 System.out.println(phenotype);
                 String y = tokens[0];
-                // for (int j = 1; j < 5; j++) {
-                //     y += "\t" + tokens[j];
-                // }
+                for (int j = 1; j < 5; j++) {
+                    System.out.println(tokens[j]);
+                    y += "\t" + tokens[j];
+                }
                 System.out.println(y);
             } catch (Exception e) {
                 System.err.println("Could not split phenotype into tokens.");
