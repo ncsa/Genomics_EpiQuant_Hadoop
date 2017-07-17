@@ -23,10 +23,16 @@ public class JobManager {
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             Random r = new Random();
+            String[] tokens;
             String line;
 
 			while ((line = buff.readLine()) != null) {
-                context.write(new Text("" + r.nextInt()), new Text(line));
+                tokens = line.split("\\t");
+                String out = tokens[0];
+                for (int i = 1; i < 5; i++) {
+                    out += "\t" + tokens[i];
+                }
+                context.write(new Text("" + r.nextInt(4)), new Text(out));
 			}
         }
     }
