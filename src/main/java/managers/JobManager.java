@@ -23,22 +23,25 @@ import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 public class JobManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-            Random r = new Random();
-            String line;
+            // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
+            // Random r = new Random();
+            // String line;
 
-			while ((line = buff.readLine()) != null) {
-                try {
-                    StringTokenizer tokens = new StringTokenizer(line, "\t");
-                    String out = tokens.nextToken();
-                    while (tokens.hasMoreTokens()) {
-                        out += "\t" + tokens.nextToken();
-                    }
-                    context.write(new Text("0"), new Text(out));
-                } catch (Exception e) {
-                    System.err.println("Could not parse a line.");
-                }
-			}
+			// while ((line = buff.readLine()) != null) {
+            //     try {
+            //         StringTokenizer tokens = new StringTokenizer(line, "\t");
+            //         String out = tokens.nextToken();
+            //         while (tokens.hasMoreTokens()) {
+            //             out += "\t" + tokens.nextToken();
+            //         }
+            //         context.write(new Text("0"), new Text(out));
+            //     } catch (Exception e) {
+            //         System.err.println("Could not parse a line.");
+            //     }
+            // }
+            Configuration conf = context.getConfiguration();
+            String y = conf.get("y");
+            context.write(new Text("0"), new Text(y));
         }
     }
 
