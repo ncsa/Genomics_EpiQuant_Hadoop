@@ -54,7 +54,7 @@ public class SEMSHadoop {
         } else {
             minutes = String.valueOf(nMinutes);
         }
-        System.out.println(hours + "h:" + minutes + "m:" + seconds + "s [Status = Running...]");
+        System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...]");
     }
 
     public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
