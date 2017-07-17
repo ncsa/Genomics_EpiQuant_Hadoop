@@ -22,7 +22,7 @@ public class SEMSHadoop {
         while (running) {
             iterations++;
             runningTime(start);
-            if (iterations > 5) {
+            if (iterations > 20) {
                 running = false;
             }
             TimeUnit.SECONDS.sleep(10);
