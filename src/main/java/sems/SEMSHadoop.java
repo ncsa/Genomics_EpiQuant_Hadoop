@@ -18,6 +18,7 @@ public class SEMSHadoop {
             String phenotype = phenoList.get(i);
             try {
                 String[] tokens = phenotype.split("\\t");
+                System.out.println(phenotype);
                 String y = tokens[0];
                 // for (int j = 1; j < 5; j++) {
                 //     y += "\t" + tokens[j];
