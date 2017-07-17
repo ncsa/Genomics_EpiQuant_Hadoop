@@ -48,7 +48,7 @@ public class JobManager {
         }
     }
 
-    public void run(String[] args) throws Exception {
+    public Job run(String[] args) throws Exception {
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "job manager");
         job.setJarByClass(JobManager.class);
@@ -65,6 +65,7 @@ public class JobManager {
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("output"));
         
-        job.waitForCompletion(true);
+        job.submit();
+        return job;
     }
 }

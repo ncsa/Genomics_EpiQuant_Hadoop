@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.Configuration;
@@ -16,25 +17,29 @@ import org.apache.hadoop.conf.Configuration;
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         ArrayList<String> phenoList = getPhenotypes(args);
+        ArrayList<Job> jobList = new ArrayList<Job>();
+        JobManager jobManager = new JobManager();
+        jobList.add(jobManager.run(args));
         boolean running = true;
         long start = System.nanoTime();
-        int iterations = 0;
         while (running) {
-            iterations++;
-            runningTime(start);
-            if (iterations > 20) {
+            runningTime(start, jobList.size());
+            for (int i = 0; i < jobList.size(); i++) {
+                if (jobList.get(i).isComplete()) {
+                    System.out.print("Removing Job: " + i);
+                    jobList.remove(i);
+                }
+            }
+            if (jobList.isEmpty()) {
                 running = false;
             }
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(2);
         }
-        System.exit(0);
-        JobManager jobManager = new JobManager();
-        jobManager.run(args);
         System.out.println("Hello World");
         System.exit(0);
     }
 
-    public static void runningTime(long start) {
+    public static void runningTime(long start, int size) {
         long current, rawSeconds, nSeconds, nMinutes, hours;
         String seconds, minutes;
         
@@ -54,7 +59,7 @@ public class SEMSHadoop {
         } else {
             minutes = String.valueOf(nMinutes);
         }
-        System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...]");
+        System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...] [Jobs = " + size + "]");
     }
 
     public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
