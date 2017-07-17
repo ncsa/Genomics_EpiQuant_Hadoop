@@ -21,8 +21,7 @@ public class SEMSHadoop {
         int iterations = 0;
         while (running) {
             iterations++;
-            long current = System.nanoTime();
-            System.out.println("Elapsed Time: " + ((current - start) / 1000000000) + "s [Status: Running...]");
+            runningTime(start);
             if (iterations > 5) {
                 running = false;
             }
@@ -33,6 +32,15 @@ public class SEMSHadoop {
         jobManager.run(args);
         System.out.println("Hello World");
         System.exit(0);
+    }
+
+    public static void runningTime(long start) {
+        long current = System.nanoTime();
+        long rawSeconds = (current - start) / 1000000000;
+        long seconds = ((current - start) / 1000000000) % 60;
+        long minutes = (rawSeconds / 60) % 60;
+        long hours = rawSeconds / 60 / 60;
+        System.out.println("Elapsed Time: " + hours + "h " + minutes + "m " + seconds + "s [Status: Running...]");
     }
 
     public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
