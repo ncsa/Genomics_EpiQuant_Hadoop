@@ -1,7 +1,8 @@
 target/
-.classpath
-.project
+data/
 .settings/
 .vscode/
+.classpath
+.project
 *.jar
 dependency-reduced-pom.xml
