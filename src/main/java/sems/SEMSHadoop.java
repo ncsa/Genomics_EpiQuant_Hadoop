@@ -5,6 +5,7 @@ import managers.JobManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -12,26 +13,36 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        getPhenotypes(args);
+        ArrayList<String> phenoList = getPhenotypes(args);
+        for (int i = 0; i < phenoList.size(); i++) {
+            System.out.println(phenoList.get(i));
+        }
         JobManager jobManager = new JobManager();
         jobManager.run(args);
         System.out.println("Hello World");
         System.exit(0);
     }
 
-    public static void getPhenotypes(String[] args) throws IOException {
-        Path path = new Path("hdfs:" + args[2]);
-        FileSystem fs = FileSystem.get(new Configuration());
-        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
-        String line;
-        boolean first = true;
-        while((line = buff.readLine()) != null) {
-            if (!first) {
-                System.out.println(line);
-            } else {
-                first = false;
+    public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
+        try {
+            Path path = new Path("hdfs:" + args[2]);
+            FileSystem fs = FileSystem.get(new Configuration());
+            BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
+            String line;
+            boolean first = true;
+            ArrayList<String> phenoList = new ArrayList<String>();
+            while((line = buff.readLine()) != null) {
+                if (!first) {
+                    phenoList.add(line);
+                } else {
+                    first = false;
+                }
             }
+            return phenoList;
+        } catch (Exception e) {
+            System.err.println("Could not parse a phenotype file.");
+            System.exit(1);
         }
-        System.exit(0);
+        return null;
     }
 }
