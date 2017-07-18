@@ -29,6 +29,7 @@ public class JobManager {
             // TODO: Convert lines to double[]
             // TODO: Perform linear or multi linear regression
             // TODO: Write out signficance and x.
+            // Test commit
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
             String[] tokens;
