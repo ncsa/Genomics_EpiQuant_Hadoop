@@ -26,6 +26,9 @@ public class JobManager {
             // TODO: New conf.get to bring in x values
             // TODO: Build set of included x values
             // TODO: Fix data set to include headers.
+            // TODO: Convert lines to double[]
+            // TODO: Perform linear or multi linear regression
+            // TODO: Write out signficance and x.
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
             String[] tokens;
