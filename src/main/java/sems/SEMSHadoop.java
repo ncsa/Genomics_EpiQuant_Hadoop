@@ -54,6 +54,7 @@ public class SEMSHadoop {
         System.exit(0);
     }
 
+    // Displays tracking information and process updates.
     public static void runningTime(long start, int size, boolean finished, String message) {
         long current, rawSeconds, nSeconds, nMinutes, hours;
         String seconds, minutes;
@@ -81,20 +82,16 @@ public class SEMSHadoop {
         }
     }
 
+    // Gets phenotypes (y values) from the specified phenotype file.
     public static ArrayList<String> getPhenotypes(String[] args) throws IOException {
         try {
             Path path = new Path("hdfs:" + args[2]);
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
             String line;
-            boolean first = true;
             ArrayList<String> phenoList = new ArrayList<String>();
             while((line = buff.readLine()) != null) {
-                if (!first) {
-                    phenoList.add(line);
-                } else {
-                    first = false;
-                }
+                phenoList.add(line);
             }
             buff.close();
             return phenoList;
