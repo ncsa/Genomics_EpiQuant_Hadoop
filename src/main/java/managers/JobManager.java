@@ -22,8 +22,8 @@ import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
 public class JobManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, IntWritable>{
-        Text mapKey = new Text();
-        IntWritable mapValue = new IntWritable();
+        // Text mapKey = new Text();
+        // IntWritable mapValue = new IntWritable();
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             // String line;
@@ -39,15 +39,11 @@ public class JobManager {
             // }
 
             Configuration conf = context.getConfiguration();
-            String yString = conf.get("y"); // key for set of y values.
-            // double[] y = ConfSet.getY(yString); // y values we're comparing against.
-            // String[][] xStrings = ConfSet.getX(conf);
-            // double[][] xModel = ConfSet.convertX(xStrings); // x values already in the model.
-            // Set<String> xSet = ConfSet.storeX(xStrings); // x names already in the model.
+            // String yString = conf.get("y"); // key for set of y values.
 
-            mapKey.set(yString);
-            mapValue.set(1);
-            context.write(mapKey, mapValue);
+            // mapKey.set(yString);
+            // mapValue.set(1);
+            context.write(new Text(conf.get("y")), new IntWritable(1));
             // buff.close();
         }
     }
