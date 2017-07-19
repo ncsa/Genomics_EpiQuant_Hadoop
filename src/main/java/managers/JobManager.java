@@ -3,20 +3,17 @@ package managers;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
@@ -29,7 +26,7 @@ public class JobManager {
             // TODO: Convert lines to double[]
             // TODO: Perform linear or multi linear regression
             // TODO: Write out signficance and x.
-            
+
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
             String[] tokens;
@@ -42,9 +39,54 @@ public class JobManager {
                     first = false;
                 }
             }
+
             Configuration conf = context.getConfiguration();
-            String y = conf.get("y");
-            context.write(new Text("0"), new Text(y));
+            String yString = conf.get("y"); // key for set of y values.
+            double[] y = getY(yString); // y values we're comparing against.
+            String[][] xStrings = getX(conf);
+            double[][] xModel = convertX(xStrings); // x values already in the model.
+            Set<String> xSet = storeX(xStrings); // x names already in the model.
+
+            context.write(new Text(yString), new Text());
+        }
+
+        // Gets the y value from the context configuration.
+        public double[] getY(String yString) {
+            String[] yStrings = yString.split("\\t");
+            double[] y = new double[yStrings.length - 1];
+            for (int i = 1; i < yStrings.length; i++) {
+                y[i - 1] = Double.parseDouble(yStrings[i]);
+            }
+            return y;
+        }
+
+        // Gets the x values from the context configuration.
+        public String[][] getX(Configuration conf) {
+            String[] xs = conf.get("x").split(":");
+            String[][] xsArray = new String[xs.length][];
+            for (int i = 0; i < xs.length; i++) {
+                xsArray[i] = xs[i].split(",");
+            }
+            return xsArray;
+        }
+
+        // Gets the x value labels from the context configuration.
+        public double[][] convertX(String[][] xStrings) {
+            double[][] xValues = new double[xStrings.length - 1][xStrings[0].length - 1];
+            for (int i = 1; i < xStrings.length; i++) {
+                for (int j = 1; j < xStrings[0].length; i++) {
+                    xValues[i - 1][j - 1] = Double.parseDouble(xStrings[i][j]);
+                }
+            }
+            return xValues;
+        }
+
+        public Set<String> storeX(String[][] xStrings) {
+            Set<String> xSet = new HashSet<String>();
+            for (int i = 0; i < xStrings.length; i++) {
+                xSet.add(xStrings[i][0]);
+            }
+            return xSet;
         }
     }
 
