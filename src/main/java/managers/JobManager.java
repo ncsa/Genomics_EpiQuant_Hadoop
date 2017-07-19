@@ -34,14 +34,14 @@ public class JobManager {
 			while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
                 String xNewLabel = tokens[0];
-                // double[] xNew = new double[tokens.length - 1];
-                // for (int i = 1; i < tokens.length; i++) {
-                //     xNew[i - 1] = Double.parseDouble(tokens[i]);
-                // }
+                double[] xNew = new double[tokens.length - 1];
+                for (int i = 1; i < tokens.length; i++) {
+                    xNew[i - 1] = Double.parseDouble(tokens[i]);
+                }
 
-                // for (int i = 0 ; i < xNew.length; i++) {
-                //     xNewLabel += "\t" + xNew[i];
-                // }
+                for (int i = 0 ; i < xNew.length; i++) {
+                    xNewLabel += "\t" + xNew[i];
+                }
                 context.write(new Text(mapKey), new Text(xNewLabel));
             }
             buff.close();
