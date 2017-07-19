@@ -83,15 +83,15 @@ public class JobManager {
                 tokens = val.toString().split("\\t");
                 // If current is greater do nothing.
                 if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
-                //     // If current is less than, replace.
+                    // If current is less than, replace.
                     if (maxP.get() < Double.parseDouble(tokens[0])) {
                         maxP.set(Double.parseDouble(tokens[0]));
                         maxX.set(val.toString());
                     } else { // If equal, randomly replace.
                         Random r = new Random();
                         if (r.nextBoolean()) {
-                //             maxP.set(Double.parseDouble(tokens[0]));
-                //             maxX.set(val.toString());
+                            maxP.set(Double.parseDouble(tokens[0]));
+                            maxX.set(val.toString());
                         }
                     }
                 }
