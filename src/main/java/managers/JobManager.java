@@ -101,7 +101,7 @@ public class JobManager {
                 }
             }
             maxX.set(tempMaxX);
-            context.write(new Text(), new Text("Hello World"));
+            context.write(key, maxX);
         }
     }
 
