@@ -48,8 +48,8 @@ public class JobManager {
         }
     }
 
-    public static class MaxSigReducer extends Reducer<Text, Text, Text, IntWritable> {
-        private IntWritable result = new IntWritable();
+    public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
+        // private IntWritable result = new IntWritable();
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             // int max = 0;
             // Need iterable so that each key is only processed once.
@@ -57,7 +57,9 @@ public class JobManager {
             //     max = Math.max(max, val.get());
             // }
             // result.set(max);
-            context.write(key, result);
+            for (Text val: values) {
+                context.write(key, val);
+            }
         }
     }
 
@@ -70,7 +72,7 @@ public class JobManager {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 
         job.setMapperClass(LinRegMapper.class);
         job.setCombinerClass(MaxSigReducer.class);
