@@ -74,9 +74,9 @@ public class SEMSHadoop {
             minutes = String.valueOf(nMinutes);
         }
         if (finished) {
-            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Finish... ] [Jobs = " + size + "]" + message);
+            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Finishing..] [Jobs = " + size + "]" + message);
         } else {
-            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running...] [Jobs = " + size + "]" + message);
+            System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running....] [Jobs = " + size + "]" + message);
         }
     }
 
@@ -89,7 +89,6 @@ public class SEMSHadoop {
             boolean first = true;
             ArrayList<String> phenoList = new ArrayList<String>();
             while((line = buff.readLine()) != null) {
-                System.out.println(line);
                 if (!first) {
                     phenoList.add(line);
                 } else {
