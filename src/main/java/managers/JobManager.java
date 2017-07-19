@@ -74,7 +74,7 @@ public class JobManager {
         }
     }
 
-    public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
+    public static class MinSigReducer extends Reducer<Text, Text, Text, Text> {
         private Text minX = new Text();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -116,13 +116,13 @@ public class JobManager {
         job.setOutputValueClass(Text.class);
 
         job.setMapperClass(LinRegMapper.class);
-        job.setCombinerClass(MaxSigReducer.class);
-        job.setReducerClass(MaxSigReducer.class);
+        job.setCombinerClass(MinSigReducer.class);
+        job.setReducerClass(MinSigReducer.class);
 
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
-        job.waitForCompletion(true);
+        job.submit();
         return job;
     }
 }
