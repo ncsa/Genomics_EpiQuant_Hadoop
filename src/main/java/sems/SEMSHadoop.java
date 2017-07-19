@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.mapreduce.Job;
@@ -42,6 +41,7 @@ public class SEMSHadoop {
                     runningTime(start, jobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
                     jobList.remove(i);
                     splits.remove(i);
+                    phenoList.remove(i);
                 }
             }
             if (jobList.isEmpty()) {
