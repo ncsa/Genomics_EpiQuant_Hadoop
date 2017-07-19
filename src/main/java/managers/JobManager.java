@@ -82,7 +82,7 @@ public class JobManager {
             for (Text val: values) {
                 tokens = val.toString().split("\\t");
                 // If current is greater do nothing.
-                // if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
+                if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
                 //     // If current is less than, replace.
                     // if (maxP.get() < Double.parseDouble(tokens[0])) {
                         // maxP.set(Double.parseDouble(tokens[0]));
@@ -94,7 +94,7 @@ public class JobManager {
                 //             maxX.set(val.toString());
                 //         }
                 //     }
-                // }
+                }
                 maxX.set(val);
                 context.write(new Text(), maxX);
             }
