@@ -19,7 +19,7 @@
 
 ## Model.java
 - [x] Read in x's
-    - [ ] Validate
+    - [x] Validate
 - [ ] Write out signficance and x.
     - [ ] Validate
 
