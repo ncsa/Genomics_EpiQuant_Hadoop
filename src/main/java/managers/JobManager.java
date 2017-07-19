@@ -28,7 +28,7 @@ public class JobManager {
             String[] tokens;
 
             Configuration conf = context.getConfiguration();
-            String mapKey = conf.get("y");
+            String mapKey = ConfSet.convertY(conf);
             double[] y = ConfSet.getY(mapKey);
 
 			while ((line = buff.readLine()) != null) {
@@ -40,7 +40,7 @@ public class JobManager {
                 }
 
                 for (int i = 0 ; i < xNew.length; i++) {
-                    xNewLabel += "\t" + xNew[i];
+                    xNewLabel += "," + xNew[i];
                 }
                 context.write(new Text(mapKey), new Text(xNewLabel));
             }
