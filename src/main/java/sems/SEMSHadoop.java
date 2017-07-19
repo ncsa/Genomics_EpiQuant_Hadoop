@@ -89,6 +89,7 @@ public class SEMSHadoop {
             boolean first = true;
             ArrayList<String> phenoList = new ArrayList<String>();
             while((line = buff.readLine()) != null) {
+                System.out.println(line);
                 if (!first) {
                     phenoList.add(line);
                 } else {
