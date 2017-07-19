@@ -7,10 +7,11 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -26,16 +27,24 @@ public class JobManager {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
             String[] tokens;
-
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
 
-			while ((line = buff.readLine()) != null) {
+            while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
                 SimpleRegression regression = new SimpleRegression();
+
+                // Converts yString, and x tokens to double[].
+                // Combines x and y data and adds them to regression object.
                 regression.addData(combineData(convertNewX(tokens), ConfSet.convertY(mapKey)));
-                double significance = regression.getSignificance();
-                context.write(new Text(mapKey), new Text(Double.toString(significance)));
+                try {
+                    double significance = regression.getSignificance();
+                    if (significance < 0.05) {
+                        context.write(new Text(mapKey), new Text(Double.toString(significance) + "\t" + getXString(tokens)));
+                    }
+                } catch (Exception e) {
+                    System.err.println("Invalid significance generated.");
+                }
             }
             buff.close();
         }
@@ -48,6 +57,14 @@ public class JobManager {
             return xNew;
         }
 
+        public static String getXString(String[] tokens) {
+            String xOut = tokens[0];
+            for (int i = 1; i < tokens.length; i++) {
+                xOut += "," + tokens[i];
+            }
+            return xOut;
+        }
+
         public static double[][] combineData(double[] x, double[] y) {
             double[][] data = new double[x.length][2];
             for (int i = 0; i < x.length; i++) {
@@ -58,17 +75,28 @@ public class JobManager {
     }
 
     public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
-        // private IntWritable result = new IntWritable();
+        DoubleWritable maxP = new DoubleWritable(0.05);
+        Text maxX = new Text();
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            // int max = 0;
-            // Need iterable so that each key is only processed once.
-            // for (IntWritable val: values) {
-            //     max = Math.max(max, val.get());
-            // }
-            // result.set(max);
+            String[] tokens;
             for (Text val: values) {
-                context.write(key, val);
+                tokens = val.toString().split("\\t");
+                // If current is greater do nothing.
+                if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
+                    // If current is less than, replace.
+                    if (maxP.get() < Double.parseDouble(tokens[0])) {
+                        maxP.set(Double.parseDouble(tokens[0]));
+                        maxX.set(val.toString());
+                    } else { // If equal, randomly replace.
+                        Random r = new Random();
+                        if (r.nextBoolean()) {
+                            maxP.set(Double.parseDouble(tokens[0]));
+                            maxX.set(val.toString());
+                        }
+                    }
+                }
             }
+            context.write(new Text(), maxX);
         }
     }
 
