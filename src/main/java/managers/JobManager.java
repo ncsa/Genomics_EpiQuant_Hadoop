@@ -21,42 +21,42 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
 public class JobManager {
-    public static class LinRegMapper extends Mapper<Object, Text, Text, IntWritable>{
-        // Text mapKey = new Text();
-        // IntWritable mapValue = new IntWritable();
+    public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-            // String line;
-            // String[] tokens;
-            // boolean first = true;
-
-			// while ((line = buff.readLine()) != null) {
-            //     if (first) {
-            //         tokens = line.split("\\t");
-            //     } else {
-            //         first = false;
-            //     }
-            // }
+            BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
+            String line;
+            String[] tokens;
 
             Configuration conf = context.getConfiguration();
-            // String yString = conf.get("y"); // key for set of y values.
+            String mapKey = conf.get("y");
+            double[] y = ConfSet.getY(mapKey);
 
-            // mapKey.set(yString);
-            // mapValue.set(1);
-            context.write(new Text(conf.get("y")), new IntWritable(1));
-            // buff.close();
+			while ((line = buff.readLine()) != null) {
+                tokens = line.split("\\t");
+                String xNewLabel = tokens[0];
+                double[] xNew = new double[tokens.length - 1];
+                for (int i = 1; i < tokens.length; i++) {
+                    xNew[i - 1] = Double.parseDouble(tokens[i]);
+                }
+
+                for (int i = 0 ; i < xNew.length; i++) {
+                    xNewLabel += "\t" + xNew[i];
+                }
+                context.write(new Text(mapKey), new Text(xNewLabel));
+            }
+            buff.close();
         }
     }
 
-    public static class MaxSigReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    public static class MaxSigReducer extends Reducer<Text, Text, Text, IntWritable> {
         private IntWritable result = new IntWritable();
-        public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-            int max = 0;
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            // int max = 0;
             // Need iterable so that each key is only processed once.
-            for (IntWritable val: values) {
-                max = Math.max(max, val.get());
-            }
-            result.set(max);
+            // for (IntWritable val: values) {
+            //     max = Math.max(max, val.get());
+            // }
+            // result.set(max);
             context.write(key, result);
         }
     }
@@ -68,7 +68,7 @@ public class JobManager {
         job.setJarByClass(JobManager.class);
         
         job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
+        job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
