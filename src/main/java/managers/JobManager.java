@@ -75,33 +75,32 @@ public class JobManager {
     }
 
     public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
-        private DoubleWritable maxP = new DoubleWritable(0.05);
-        private Text maxX = new Text();
+        private Text minX = new Text();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            double tempMaxP = 0.05;
-            String tempMaxX = "";
+            double tempMinP = 0.05;
+            String tempMinX = "";
             String[] tokens;
 
             for (Text val: values) {
                 tokens = val.toString().split("\\t");
                 // If current is greater do nothing.
-                if (!(tempMaxP > Double.parseDouble(tokens[0]))) { 
+                if (!(tempMinP < Double.parseDouble(tokens[0]))) { 
                     // If current is less than, replace.
-                    if (tempMaxP < Double.parseDouble(tokens[0])) {
-                        tempMaxP = Double.parseDouble(tokens[0]);
-                        tempMaxX = val.toString();
+                    if (tempMinP > Double.parseDouble(tokens[0])) {
+                        tempMinP = Double.parseDouble(tokens[0]);
+                        tempMinX = val.toString();
                     } else { // If equal, randomly replace.
                         Random r = new Random();
                         if (r.nextBoolean()) {
-                            tempMaxP = Double.parseDouble(tokens[0]);
-                            tempMaxX = val.toString();
+                            tempMinP = Double.parseDouble(tokens[0]);
+                            tempMinX = val.toString();
                         }
                     }
                 }
             }
-            maxX.set(tempMaxX);
-            context.write(key, maxX);
+            minX.set(tempMinX);
+            context.write(new Text(), minX);
         }
     }
 
