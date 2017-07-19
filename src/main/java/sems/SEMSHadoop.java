@@ -29,13 +29,6 @@ public class SEMSHadoop {
             splits.get(i)[1] = 1; // Split number
             runningTime(start, jobList.size(), false, " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
             jobList.add(jobManager.run(args, phenoList.get(i), splits.get(i)[0], splits.get(i)[1]));
-
-            // TODO: Testing for x file reading. Delete after using.
-            String writeOut = "";
-            if ((writeOut = Model.getModel(args[2])) != null) {
-                System.out.println(writeOut);
-            }
-            System.exit(0);
         }
 
         boolean running = true;
