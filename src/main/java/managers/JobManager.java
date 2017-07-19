@@ -94,7 +94,7 @@ public class JobManager {
                 //             maxX.set(val.toString());
                 //         }
                 //     }
-                }
+                // }
                 maxX.set(val);
                 context.write(new Text(), maxX);
             }
