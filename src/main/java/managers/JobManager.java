@@ -28,23 +28,32 @@ public class JobManager {
             String[] tokens;
 
             Configuration conf = context.getConfiguration();
-            String mapKey = ConfSet.convertY(conf);
-            double[] y = ConfSet.getY(mapKey);
+            String mapKey = ConfSet.getY(conf);
 
 			while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
-                String xNewLabel = tokens[0];
-                double[] xNew = new double[tokens.length - 1];
-                for (int i = 1; i < tokens.length; i++) {
-                    xNew[i - 1] = Double.parseDouble(tokens[i]);
-                }
-
-                for (int i = 0 ; i < xNew.length; i++) {
-                    xNewLabel += "," + xNew[i];
-                }
-                context.write(new Text(mapKey), new Text(xNewLabel));
+                SimpleRegression regression = new SimpleRegression();
+                regression.addData(combineData(convertNewX(tokens), ConfSet.convertY(mapKey)));
+                double significance = regression.getSignificance();
+                context.write(new Text(mapKey), new Text(Double.toString(significance)));
             }
             buff.close();
+        }
+
+        public static double[] convertNewX(String[] tokens) {
+            double[] xNew = new double[tokens.length - 1];
+            for (int i = 1; i < tokens.length; i++) {
+                xNew[i - 1] = Double.parseDouble(tokens[i]);
+            }
+            return xNew;
+        }
+
+        public static double[][] combineData(double[] x, double[] y) {
+            double[][] data = new double[x.length][2];
+            for (int i = 0; i < x.length; i++) {
+                data[i] = new double[]{x[i], y[i]};
+            }
+            return data;
         }
     }
 
