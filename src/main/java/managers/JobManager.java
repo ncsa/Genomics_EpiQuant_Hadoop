@@ -123,7 +123,7 @@ public class JobManager {
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
-        job.submit();
+        job.waitForCompletion(true);
         return job;
     }
 }
