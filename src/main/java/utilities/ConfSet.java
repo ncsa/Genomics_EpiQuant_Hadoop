@@ -7,22 +7,22 @@ import org.apache.hadoop.conf.Configuration;
 
 public class ConfSet {
     // Gets the y value from the context configuration.
-    public static double[] getY(String yString) {
-        String[] yStrings = yString.split(",");
-        double[] y = new double[yStrings.length - 1];
-        for (int i = 1; i < yStrings.length; i++) {
-            y[i - 1] = Double.parseDouble(yStrings[i]);
-        }
-        return y;
-    }
-
-    public static String convertY(Configuration conf) {
+    public static String getY(Configuration conf) {
         String[] yIn = conf.get("y").split("\\t");
         String yOut = yIn[0];
         for (int i = 1 ; i < yIn.length; i++) {
             yOut += "," + yIn[i];
         }
         return yOut;
+    }
+
+    public static double[] convertY(String yString) {
+        String[] yStrings = yString.split(",");
+        double[] y = new double[yStrings.length - 1];
+        for (int i = 1; i < yStrings.length; i++) {
+            y[i - 1] = Double.parseDouble(yStrings[i]);
+        }
+        return y;
     }
 
     // Gets the x values from the context configuration.
