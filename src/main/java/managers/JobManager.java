@@ -88,11 +88,11 @@ public class JobManager {
                         maxP.set(Double.parseDouble(tokens[0]));
                         maxX.set(val.toString());
                     } else { // If equal, randomly replace.
-                //         Random r = new Random();
-                //         if (r.nextBoolean()) {
+                        Random r = new Random();
+                        if (r.nextBoolean()) {
                 //             maxP.set(Double.parseDouble(tokens[0]));
                 //             maxX.set(val.toString());
-                        // }
+                        }
                     }
                 }
                 maxX.set(val);
