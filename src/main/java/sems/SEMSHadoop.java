@@ -32,7 +32,7 @@ public class SEMSHadoop {
 
             // TODO: Testing for x file reading. Delete after using.
             String writeOut = "";
-            if ((writeOut = Model.getModel("pheno/pheno.txt")) != null) {
+            if ((writeOut = Model.getModel(args[2])) != null) {
                 System.out.println(writeOut);
             }
             System.exit(0);
@@ -103,6 +103,7 @@ public class SEMSHadoop {
                     first = false;
                 }
             }
+            buff.close();
             return phenoList;
         } catch (Exception e) {
             System.err.println("Could not parse a phenotype file.");
