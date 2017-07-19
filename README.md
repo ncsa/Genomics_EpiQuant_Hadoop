@@ -2,18 +2,26 @@
 
 ## SEMSHadoop.java
 - [ ] Job re-adder
+    - [ ] Validate
 - [ ] Job directory remover
+    - [ ] Validate
 - [ ] Job completion validator
+    - [ ] Validate
 - [x] Fix data set to include headers. - Not going to do this
 
 ## JobManager.java
-- [ ] Perform linear or multi linear regression]
+- [ ] Linear Regression
+    - [ ] Validate
+- [ ] Multi Linear Regression
+    - [ ] Validate
 - [x] Convert lines to double[]
     - [ ] Validate
 
 ## Model.java
-- [ ] Read in x's
+- [x] Read in x's
+    - [ ] Validate
 - [ ] Write out signficance and x.
+    - [ ] Validate
 
 ## ConfSet.java
 - [x] conf.get to bring in y values
