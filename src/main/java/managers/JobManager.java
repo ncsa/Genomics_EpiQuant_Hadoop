@@ -75,8 +75,8 @@ public class JobManager {
     }
 
     public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
-        DoubleWritable maxP = new DoubleWritable(0.05);
-        Text maxX = new Text();
+        private DoubleWritable maxP = new DoubleWritable(0.05);
+        private Text maxX = new Text();
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             String[] tokens;
             for (Text val: values) {
@@ -95,10 +95,8 @@ public class JobManager {
                         }
                     }
                 }
-                maxX.set(val);
-                context.write(new Text(), maxX);
             }
-            // context.write(new Text(), maxX);
+            context.write(new Text(), maxX);
         }
     }
 
