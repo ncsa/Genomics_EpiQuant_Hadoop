@@ -48,6 +48,7 @@ public class JobManager {
             mapKey.set(yString);
             mapValue.set(1);
             context.write(mapKey, mapValue);
+            // buff.close();
         }
     }
 

@@ -16,7 +16,9 @@ public class Model {
             Path path = new Path("hdfs:" + inPath);
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
-            return buff.readLine();
+            String out = buff.readLine();
+            buff.close();
+            return out;
         } catch (Exception e) {
             System.err.println("Could not parse the model file.");
             System.exit(1);
