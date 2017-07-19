@@ -82,7 +82,7 @@ public class JobManager {
             double tempMaxP = 0.05;
             String tempMaxX = "";
             String[] tokens;
-            
+
             for (Text val: values) {
                 tokens = val.toString().split("\\t");
                 // If current is greater do nothing.
@@ -101,7 +101,7 @@ public class JobManager {
                 }
             }
             maxX.set(tempMaxX);
-            context.write(new Text(), maxX);
+            context.write(new Text(), new Text("Hello World"));
         }
     }
 
