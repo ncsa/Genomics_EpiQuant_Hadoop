@@ -27,25 +27,25 @@ public class JobManager {
             // TODO: Perform linear or multi linear regression
             // TODO: Write out signficance and x.
 
-            BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-            String line;
-            String[] tokens;
-            boolean first = true;
+            // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
+            // String line;
+            // String[] tokens;
+            // boolean first = true;
 
-			while ((line = buff.readLine()) != null) {
-                if (first) {
-                    tokens = line.split("\\t");
-                } else {
-                    first = false;
-                }
-            }
+			// while ((line = buff.readLine()) != null) {
+            //     if (first) {
+            //         tokens = line.split("\\t");
+            //     } else {
+            //         first = false;
+            //     }
+            // }
 
             Configuration conf = context.getConfiguration();
             String yString = conf.get("y"); // key for set of y values.
-            double[] y = getY(yString); // y values we're comparing against.
-            String[][] xStrings = getX(conf);
-            double[][] xModel = convertX(xStrings); // x values already in the model.
-            Set<String> xSet = storeX(xStrings); // x names already in the model.
+            // double[] y = getY(yString); // y values we're comparing against.
+            // String[][] xStrings = getX(conf);
+            // double[][] xModel = convertX(xStrings); // x values already in the model.
+            // Set<String> xSet = storeX(xStrings); // x names already in the model.
 
             context.write(new Text(yString), new Text());
         }
