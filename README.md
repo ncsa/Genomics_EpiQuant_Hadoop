@@ -1,13 +1,13 @@
 # SEMS-Hadoop
 
 - [x] conf.get to bring in y values
-- [x] Validate
+    - [x] Validate
 - [x] New conf.get to bring in x values
-- [ ] Validate
+    - [ ] Validate
 - [x] Build set of included x values
-- [ ] Validate
+    - [ ] Validate
 - [x] Fix data set to include headers.
 - [x] Convert lines to double[]
-- [ ] Validate
+    - [ ] Validate
 - [ ] Perform linear or multi linear regression
 - [ ] Write out signficance and x.
