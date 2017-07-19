@@ -99,11 +99,11 @@ public class JobManager {
     public static class MaxSigReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
         private IntWritable result = new IntWritable();
         public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-            int sum = 0;
+            int max = 0;
             for (IntWritable val: values) {
-                sum += val.get();
+                max = Math.max(max, val.get());
             }
-            result.set(sum);
+            result.set(max);
             context.write(key, result);
         }
     }
