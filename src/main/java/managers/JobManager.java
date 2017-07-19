@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -18,7 +19,9 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
 public class JobManager {
-    public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
+    public static class LinRegMapper extends Mapper<Object, Text, Text, IntWritable>{
+        Text mapKey = new Text();
+        IntWritable mapValue = new IntWritable();
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             // TODO: New conf.get to bring in x values
             // TODO: Build set of included x values
@@ -47,7 +50,9 @@ public class JobManager {
             // double[][] xModel = convertX(xStrings); // x values already in the model.
             // Set<String> xSet = storeX(xStrings); // x names already in the model.
 
-            context.write(new Text(yString), new Text());
+            mapKey.set(yString);
+            mapValue.set(1);
+            context.write(mapKey, mapValue);
         }
 
         // Gets the y value from the context configuration.
@@ -70,7 +75,7 @@ public class JobManager {
             return xsArray;
         }
 
-        // Gets the x value labels from the context configuration.
+        // Convert the x values from strings to doubles.
         public double[][] convertX(String[][] xStrings) {
             double[][] xValues = new double[xStrings.length - 1][xStrings[0].length - 1];
             for (int i = 1; i < xStrings.length; i++) {
@@ -81,6 +86,7 @@ public class JobManager {
             return xValues;
         }
 
+        // Gets the x value labels from the context configuration.
         public Set<String> storeX(String[][] xStrings) {
             Set<String> xSet = new HashSet<String>();
             for (int i = 0; i < xStrings.length; i++) {
@@ -90,9 +96,15 @@ public class JobManager {
         }
     }
 
-    public static class MaxSigReducer extends Reducer<Text, Text, Text, Text> {
-        public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
-            context.write(key, values);
+    public static class MaxSigReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+        private IntWritable result = new IntWritable();
+        public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+            int sum = 0;
+            for (IntWritable val: values) {
+                sum += val.get();
+            }
+            result.set(sum);
+            context.write(key, result);
         }
     }
 
@@ -103,9 +115,9 @@ public class JobManager {
         job.setJarByClass(JobManager.class);
         
         job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
 
         job.setMapperClass(LinRegMapper.class);
         job.setCombinerClass(MaxSigReducer.class);
