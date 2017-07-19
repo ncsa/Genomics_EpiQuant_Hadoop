@@ -80,23 +80,25 @@ public class JobManager {
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             String[] tokens;
             for (Text val: values) {
-                tokens = val.toString().split("\\t");
-                // If current is greater do nothing.
-                if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
-                    // If current is less than, replace.
-                    if (maxP.get() < Double.parseDouble(tokens[0])) {
-                        maxP.set(Double.parseDouble(tokens[0]));
-                        maxX.set(val.toString());
-                    } else { // If equal, randomly replace.
-                        Random r = new Random();
-                        if (r.nextBoolean()) {
-                            maxP.set(Double.parseDouble(tokens[0]));
-                            maxX.set(val.toString());
-                        }
-                    }
-                }
+                // tokens = val.toString().split("\\t");
+                // // If current is greater do nothing.
+                // if (!(maxP.get() > Double.parseDouble(tokens[0]))) { 
+                //     // If current is less than, replace.
+                //     if (maxP.get() < Double.parseDouble(tokens[0])) {
+                //         maxP.set(Double.parseDouble(tokens[0]));
+                //         maxX.set(val.toString());
+                //     } else { // If equal, randomly replace.
+                //         Random r = new Random();
+                //         if (r.nextBoolean()) {
+                //             maxP.set(Double.parseDouble(tokens[0]));
+                //             maxX.set(val.toString());
+                //         }
+                //     }
+                // }
+                maxX.set(val);
+                context.write(new Text(), maxX);
             }
-            context.write(new Text(), maxX);
+            // context.write(new Text(), maxX);
         }
     }
 
