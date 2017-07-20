@@ -25,6 +25,7 @@ public class SEMSHadoop {
         ArrayList<Job> bJobList = new ArrayList<Job>();
         ArrayList<int[]> bSplits = new ArrayList<int[]>();
         long start = System.nanoTime();
+        String message;
 
         // Submit jobs by to the job list.
         ForwardManager fManager = new ForwardManager();
@@ -33,7 +34,8 @@ public class SEMSHadoop {
             fSplits.add(new int[2]);
             fSplits.get(i)[0] = i; // Phenotype number
             fSplits.get(i)[1] = 1; // Split number
-            runningTime(start, fJobList.size(), false, " [Task = Adding P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]");
+            message = " [Task = Adding F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
+            runningTime(start, fJobList.size(), false, message);
             fJobList.add(fManager.run(args, fPhenoList.get(i), fSplits.get(i)[0], fSplits.get(i)[1]));
         }
 
@@ -41,22 +43,34 @@ public class SEMSHadoop {
 
         // Track running jobs until none are left.
         while (running) {
+            int size = fJobList.size();
             runningTime(start, fJobList.size(), false, "");
             // Remove jobs if completed.
-            for (int i = 0; i < fJobList.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 if (fJobList.get(i).isComplete()) {
-                    String message = " [Task = Removing F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
+                    message = " [Task = Removing F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
                     runningTime(start, fJobList.size() + bJobList.size(), false, message);
-
                     fJobList.remove(i);
+                    i--;
+                    size--;
+
+                    // if (true) {
+                    //     String baseDir = "/user/rchui2/Phenotype-" + fSplits.get(i)[0] + ".Split-" + fSplits.get(i)[1] + "/";
+                    //     message = " [Task = Adding B.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
+                    //     runningTime(start, fJobList.size(), false, message);
+                    //     bJobList.add(bManager.run(baseDir + "part-r-00000", fPhenoList.get(i), baseDir));
+                    // }
                     fSplits.remove(i);
                     fPhenoList.remove(i);
                 }
             }
-            for (int i = 0; i < bJobList.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 if (bJobList.get(i).isComplete()) {
-                    String message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
+                    message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
                     runningTime(start, fJobList.size() + bJobList.size(), false, message);
+                    bJobList.remove(i);
+                    i--;
+                    size--;
                 }
             }
             if (fJobList.isEmpty() && bJobList.isEmpty()) {
