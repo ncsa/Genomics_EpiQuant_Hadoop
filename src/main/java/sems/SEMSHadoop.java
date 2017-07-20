@@ -40,6 +40,8 @@ public class SEMSHadoop {
             for (int i = 0; i < jobList.size(); i++) {
                 if (jobList.get(i).isComplete()) {
                     runningTime(start, jobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
+                    String baseDir = "Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
+                    Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
                     jobList.remove(i);
                     splits.remove(i);
                     phenoList.remove(i);
