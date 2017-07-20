@@ -1,14 +1,11 @@
 package managers;
 
 import utilities.ConfSet;
+import utilities.Model;
 
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -20,76 +17,77 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.math.stat.regression.GLSMultipleLinearRegression;
-import org.apache.commons.math.stat.regression.MultipleLinearRegression;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
+import org.apache.commons.math3.util.FastMath;
 
 public class BackwardManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            // BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
-            // String line;
-            // String[] tokens;
-            // Configuration conf = context.getConfiguration();
-            // String mapKey = ConfSet.getY(conf);
-            // ArrayList<double[]> xModel = new ArrayList<double[]>();
+            BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
+            String line;
+            String[] tokens;
+            Configuration conf = context.getConfiguration();
+            String mapKey = ConfSet.getY(conf);
+            double[][] x;
 
-            // while ((line = buff.readLine()) != null) {
-            //     tokens = line.split("\\t");
-            //     SimpleRegression regression = new SimpleRegression();
+            while ((line = buff.readLine()) != null) {
+                tokens = line.split("\\t")[2].split(",");
+                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
 
-            //     // Converts yString, and x tokens to double[].
-            //     // Combines x and y data and adds them to regression object.
-            //     regression.addData(ConfSet.combineData(ConfSet.convertXNew(tokens), ConfSet.convertY(mapKey)));
-            //     try {
-            //         double significance = regression.getSignificance();
-            //         if (significance < 0.05) {
-            //             context.write(new Text(mapKey), new Text(Double.toString(significance) + "\t" + ConfSet.getXNewString(tokens)));
-            //         }
-            //     } catch (Exception e) {
-            //         System.err.println("Invalid significance generated.");
-            //     }
-            // }
-            // buff.close();
+                // Converts yString to double[], and x tokens to double[][].
+                // Combines x and y data and adds them to regression object.
+
+                // TODO: Replace 1 with model + 1;
+                // TODO: Fill for loop.
+                String[] xStrings = new String[1];
+                // for (int i = 0; i < xStrings.length; i++) {
+
+                // }
+                xStrings[xStrings.length - 1] = ConfSet.getXNewString(tokens);
+                x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]);
+                regression.newSampleData(ConfSet.convertY(mapKey), x);
+                try {
+                    calculateSignificance(regression, conf, xStrings);
+                } catch (Exception e) {
+                    System.err.println("Invalid significance generated.");
+                }
+            }
+            buff.close();
+        }
+
+        // Calculates significance of regressors.
+        public static void calculateSignificance(OLSMultipleLinearRegression regression, Configuration conf, String[] xStrings) throws Exception {
+            final double[] beta = regression.estimateRegressionParameters();
+            final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
+            final int residualdf = regression.estimateResiduals().length - beta.length;
+
+            final TDistribution tdistribution = new TDistribution(residualdf);
+
+            // beta.length - 1 to ignore new x.
+            for (int i = 0; i < beta.length - 1; i++) {
+                double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
+                double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
+                if (pvalue < 0.05) {
+                    Model.setModel(conf.get("outPath"), xStrings[i]);
+                }
+            }
+            Model.setModel(conf.get("outPath"), xStrings[xStrings.length - 1]);
         }
     }
 
     public static class MinSigReducer extends Reducer<Text, Text, Text, Text> {
         // private Text minX = new Text();
 
-        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            // double tempMinP = 0.05;
-            // String tempMinX = "";
-            // String[] tokens;
-
-            // for (Text val: values) {
-            //     tokens = val.toString().split("\\t");
-            //     // If current is less do nothing.
-            //     if (!(tempMinP < Double.parseDouble(tokens[0]))) { 
-            //         // If current is greater, replace.
-            //         if (tempMinP > Double.parseDouble(tokens[0])) {
-            //             tempMinP = Double.parseDouble(tokens[0]);
-            //             tempMinX = val.toString();
-            //         } else { // If equal, randomly replace.
-            //             Random r = new Random();
-            //             if (r.nextBoolean()) {
-            //                 tempMinP = Double.parseDouble(tokens[0]);
-            //                 tempMinX = val.toString();
-            //             }
-            //         }
-            //     }
-            // }
-            // minX.set(tempMinX);
-            for (Text val: values) {
-                context.write(key, val);
-            }
+        public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
+            context.write(key, values);
         }
     }
 
-    public Job run(String[] args, String y, int phenotype, int split) throws Exception {
+    public Job run(String forwardResult, String y, String modelPath) throws Exception {
         Configuration conf = new Configuration();
         conf.set("y", y);
+        conf.set("outPath", modelPath);
         Job job = Job.getInstance(conf, "job manager");
         job.setJarByClass(BackwardManager.class);
         
@@ -103,8 +101,8 @@ public class BackwardManager {
         job.setCombinerClass(MinSigReducer.class);
         job.setReducerClass(MinSigReducer.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[1]));
-        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+        FileInputFormat.addInputPath(job, new Path(forwardResult));
+        FileOutputFormat.setOutputPath(job, new Path("temp"));
         
         job.waitForCompletion(true);
         return job;
