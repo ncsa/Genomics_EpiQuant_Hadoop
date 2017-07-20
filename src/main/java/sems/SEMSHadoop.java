@@ -41,11 +41,11 @@ public class SEMSHadoop {
                 if (jobList.get(i).isComplete()) {
                     runningTime(start, jobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
                     String baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
-                    Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
-                    if (splits.get(i)[1] > 1) {
-                        String prevDir = "/user/rchui2/Phenotype-" + (splits.get(i)[0] - 1) + ".Split-" + (splits.get(i)[1] - 1) + "/";
-                        Model.updateModel(prevDir + "model.txt", baseDir + "model.txt");
-                    }
+                    // Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
+                    // if (splits.get(i)[1] > 1) {
+                    //     String prevDir = "/user/rchui2/Phenotype-" + (splits.get(i)[0] - 1) + ".Split-" + (splits.get(i)[1] - 1) + "/";
+                    //     Model.updateModel(prevDir + "model.txt", baseDir + "model.txt");
+                    // }
                     
                     jobList.remove(i);
                     splits.remove(i);
