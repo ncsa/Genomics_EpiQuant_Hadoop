@@ -43,10 +43,10 @@ public class SEMSHadoop {
 
         // Track running jobs until none are left.
         while (running) {
-            runningTime(start, fJobList.size(), false, "");
+            runningTime(start, fJobList.size() + bJobList.size(), false, "");
             int size = fJobList.size();
             // Remove jobs if completed.
-            for (int i = 0; i < fJobList.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 if (fJobList.get(i).isComplete()) {
                     message = " [Task = Removing F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
                     runningTime(start, fJobList.size() + bJobList.size(), false, message);
@@ -66,7 +66,7 @@ public class SEMSHadoop {
             }
 
             size = bJobList.size();
-            for (int i = 0; i < bJobList.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 if (bJobList.get(i).isComplete()) {
                     message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
                     runningTime(start, bJobList.size() + bJobList.size(), false, message);
@@ -80,7 +80,7 @@ public class SEMSHadoop {
             }
             TimeUnit.SECONDS.sleep(2);
         }
-        runningTime(start, fJobList.size(), true, "");
+        runningTime(start, fJobList.size() + bJobList.size(), true, "");
         System.exit(0);
     }
 
