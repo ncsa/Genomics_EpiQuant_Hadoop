@@ -1,6 +1,7 @@
 # SEMS-Hadoop
 
 ## SEMSHadoop.java
+- [ ] Make sure to fix absolute path in baseDir
 - [ ] Job re-adder
     - [ ] Validate
 - [ ] Job directory remover
