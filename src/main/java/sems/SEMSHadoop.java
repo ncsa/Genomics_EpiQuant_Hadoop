@@ -33,7 +33,7 @@ public class SEMSHadoop {
             fSplits.add(new int[2]);
             fSplits.get(i)[0] = i; // Phenotype number
             fSplits.get(i)[1] = 1; // Split number
-            runningTime(start, fJobList.size(), false, " [Task = Adding P-" + fSplits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
+            runningTime(start, fJobList.size(), false, " [Task = Adding P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]");
             fJobList.add(fManager.run(args, fPhenoList.get(i), fSplits.get(i)[0], fSplits.get(i)[1]));
         }
 
@@ -45,7 +45,7 @@ public class SEMSHadoop {
             // Remove jobs if completed.
             for (int i = 0; i < fJobList.size(); i++) {
                 if (fJobList.get(i).isComplete()) {
-                    runningTime(start, fJobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
+                    runningTime(start, fJobList.size(), false, " [Task = Removing P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]");
                     // String baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
                     // Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
                     // if (splits.get(i)[1] > 1) {
