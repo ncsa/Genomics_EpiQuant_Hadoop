@@ -40,4 +40,23 @@ public class Model {
         buffOut.write(tokens[2]);
         buffOut.close();           
     }
+
+    // Update model file.
+    public static void updateModel(String inPath, String outPath) throws IOException {
+        Path path = new Path("hdfs:" + inPath);
+        FileSystem fs = FileSystem.get(new Configuration());
+        BufferedReader buffIn = new BufferedReader(new InputStreamReader(fs.open(path)));
+
+        String line = buffIn.readLine();
+        buffIn.close();
+
+        path = new Path("hdfs:" + outPath);
+        BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.append(path)));
+        if (line != "") {
+            buffOut.write("\t" + line);
+        } else {
+            buffOut.write(line);
+        }
+        buffOut.close();
+    }
 }
