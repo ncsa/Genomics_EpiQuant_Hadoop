@@ -36,11 +36,11 @@ public class JobManager {
 
                 // Converts yString, and x tokens to double[].
                 // Combines x and y data and adds them to regression object.
-                regression.addData(combineData(convertNewX(tokens), ConfSet.convertY(mapKey)));
+                regression.addData(combineData(convertXNew(tokens), ConfSet.convertY(mapKey)));
                 try {
                     double significance = regression.getSignificance();
                     if (significance < 0.05) {
-                        context.write(new Text(mapKey), new Text(Double.toString(significance) + "\t" + getXString(tokens)));
+                        context.write(new Text(mapKey), new Text(Double.toString(significance) + "\t" + getXNewString(tokens)));
                     }
                 } catch (Exception e) {
                     System.err.println("Invalid significance generated.");
@@ -49,7 +49,7 @@ public class JobManager {
             buff.close();
         }
 
-        public static double[] convertNewX(String[] tokens) {
+        public static double[] convertXNew(String[] tokens) {
             double[] xNew = new double[tokens.length - 1];
             for (int i = 1; i < tokens.length; i++) {
                 xNew[i - 1] = Double.parseDouble(tokens[i]);
@@ -57,7 +57,7 @@ public class JobManager {
             return xNew;
         }
 
-        public static String getXString(String[] tokens) {
+        public static String getXNewString(String[] tokens) {
             String xOut = tokens[0];
             for (int i = 1; i < tokens.length; i++) {
                 xOut += "," + tokens[i];
@@ -74,8 +74,9 @@ public class JobManager {
         }
     }
 
-    public static class MinSigReducer extends Reducer<Text, Text, Text, Text> {
+    public static class MinSigReducer extends Reducer<Text, Text, DoubleWritable, Text> {
         private Text minX = new Text();
+        private DoubleWritable minP = new DoubleWritable();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             double tempMinP = 0.05;
@@ -99,8 +100,10 @@ public class JobManager {
                     }
                 }
             }
-            minX.set(tempMinX);
-            context.write(new Text(), minX);
+            tokens = tempMinX.split("\\t");
+            minX.set(tokens[1]);
+            minP.set(tempMinP);
+            context.write(minP, minX);
         }
     }
 
@@ -112,7 +115,7 @@ public class JobManager {
         
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
-        job.setOutputKeyClass(Text.class);
+        job.setOutputKeyClass(DoubleWritable.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapperClass(LinRegMapper.class);
