@@ -57,9 +57,10 @@ public class SEMSHadoop {
                         message = " [Task = Adding B.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
                         runningTime(start, fJobList.size(), false, message);
                         bJobList.add(bManager.run(baseDir + "part-r-00000", fPhenoList.get(i), baseDir));
+                        bSplits.add(fSplits.remove(i));
+                        bPhenoList.add(fPhenoList.remove(i));
                     }
-                    fSplits.remove(i);
-                    fPhenoList.remove(i);
+                    
                     i--;
                     size--;
                 }
