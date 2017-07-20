@@ -43,16 +43,13 @@ public class SEMSHadoop {
 
         // Track running jobs until none are left.
         while (running) {
-            int size = fJobList.size();
             runningTime(start, fJobList.size(), false, "");
             // Remove jobs if completed.
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < fJobList.size(); i++) {
                 if (fJobList.get(i).isComplete()) {
                     message = " [Task = Removing F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
                     runningTime(start, fJobList.size() + bJobList.size(), false, message);
                     fJobList.remove(i);
-                    i--;
-                    size--;
 
                     if (true) {
                         String baseDir = "/user/rchui2/Phenotype-" + fSplits.get(i)[0] + ".Split-" + fSplits.get(i)[1] + "/";
@@ -64,14 +61,12 @@ public class SEMSHadoop {
                     fPhenoList.remove(i);
                 }
             }
-            size = bJobList.size();
-            for (int i = 0; i < size; i++) {
+
+            for (int i = 0; i < bJobList.size(); i++) {
                 if (bJobList.get(i).isComplete()) {
                     message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
                     runningTime(start, fJobList.size() + bJobList.size(), false, message);
                     bJobList.remove(i);
-                    i--;
-                    size--;
                 }
             }
             if (fJobList.isEmpty() && bJobList.isEmpty()) {
