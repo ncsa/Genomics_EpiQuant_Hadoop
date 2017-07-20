@@ -45,19 +45,18 @@ public class SEMSHadoop {
             // Remove jobs if completed.
             for (int i = 0; i < fJobList.size(); i++) {
                 if (fJobList.get(i).isComplete()) {
-                    runningTime(start, fJobList.size(), false, " [Task = Removing P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]");
-                    // String baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
-                    // Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
-                    // if (splits.get(i)[1] > 1) {
-                    //     String prevDir = "/user/rchui2/Phenotype-" + (splits.get(i)[0] - 1) + ".Split-" + (splits.get(i)[1] - 1) + "/";
-                    //     Model.updateModel(prevDir + "model.txt", baseDir + "model.txt");
-                    // }
+                    String message = " [Task = Removing F.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
+                    runningTime(start, fJobList.size() + bJobList.size(), false, message);
 
-                    // backwardManager.run(baseDir + "part-r-00000", phenoList.get(i), baseDir + "model.txt");
-                    
                     fJobList.remove(i);
                     fSplits.remove(i);
                     fPhenoList.remove(i);
+                }
+            }
+            for (int i = 0; i < bJobList.size(); i++) {
+                if (bJobList.get(i).isComplete()) {
+                    String message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
+                    runningTime(start, fJobList.size() + bJobList.size(), false, message);
                 }
             }
             if (fJobList.isEmpty() && bJobList.isEmpty()) {
