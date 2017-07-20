@@ -10,12 +10,12 @@
 - [x] Fix data set to include headers. - Not going to do this
 
 ## JobManager.java
-- [ ] Linear Regression
+- [x] Linear Regression
     - [ ] Validate
 - [ ] Multi Linear Regression
     - [ ] Validate
 - [x] Convert lines to double[]
-    - [ ] Validate
+    - [x] Validate
 
 ## Model.java
 - [x] Read in x's
