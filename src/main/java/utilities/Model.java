@@ -30,7 +30,7 @@ public class Model {
 
     // Writes model to a file.
     public static void setModel(String inPath, String outPath) {
-        try {
+        // try {
             // Open reader to get new x.
             Path path = new Path("hdfs:" + inPath);
             FileSystem fs = FileSystem.get(new Configuration());
@@ -46,9 +46,9 @@ public class Model {
             BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
             buffOut.write(tokens[2]);
             buffOut.close();           
-        } catch (Exception e) {
-            System.err.println("Could not set model file.");
-            System.exit(1);
-        }
+        // } catch (Exception e) {
+        //     System.err.println("Could not set model file.");
+        //     System.exit(1);
+        // }
     }
 }
