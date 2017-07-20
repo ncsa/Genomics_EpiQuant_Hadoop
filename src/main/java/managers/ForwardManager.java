@@ -36,7 +36,7 @@ public class ForwardManager {
 
                 // Converts yString to double[], and x tokens to double[][].
                 // Combines x and y data and adds them to regression object.
-                x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]);
+                x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]); // Make sure to +1 index
                 regression.newSampleData(ConfSet.convertY(mapKey), x);
                 try {
                     calculateSignificance(regression, context, mapKey, tokens);
