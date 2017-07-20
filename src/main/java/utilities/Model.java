@@ -54,8 +54,6 @@ public class Model {
         BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.append(path)));
         if (line != "") {
             buffOut.write("\t" + line);
-        } else {
-            buffOut.write(line);
         }
         buffOut.close();
     }
