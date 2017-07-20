@@ -1,5 +1,6 @@
 package sems;
 
+import managers.BackwardManager;
 import managers.ForwardManager;
 import utilities.Model;
 
@@ -16,48 +17,55 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        ArrayList<String> phenoList = getPhenotypes(args);
-        ArrayList<Job> jobList = new ArrayList<Job>();
-        ArrayList<int[]> splits = new ArrayList<int[]>();
+        ArrayList<String> fPhenoList = getPhenotypes(args);
+        ArrayList<Job> fJobList = new ArrayList<Job>();
+        ArrayList<int[]> fSplits = new ArrayList<int[]>();
+
+        ArrayList<String> bPhenoList = new ArrayList<String>();
+        ArrayList<Job> bJobList = new ArrayList<Job>();
+        ArrayList<int[]> bSplits = new ArrayList<int[]>();
         long start = System.nanoTime();
 
         // Submit jobs by to the job list.
-        ForwardManager jobManager = new ForwardManager();
-        for (int i = 0; i < phenoList.size(); i++) {
-            splits.add(new int[2]);
-            splits.get(i)[0] = i; // Phenotype number
-            splits.get(i)[1] = 1; // Split number
-            runningTime(start, jobList.size(), false, " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
-            jobList.add(jobManager.run(args, phenoList.get(i), splits.get(i)[0], splits.get(i)[1]));
+        ForwardManager fManager = new ForwardManager();
+        BackwardManager bManager = new BackwardManager();
+        for (int i = 0; i < fPhenoList.size(); i++) {
+            fSplits.add(new int[2]);
+            fSplits.get(i)[0] = i; // Phenotype number
+            fSplits.get(i)[1] = 1; // Split number
+            runningTime(start, fJobList.size(), false, " [Task = Adding P-" + fSplits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
+            fJobList.add(fManager.run(args, fPhenoList.get(i), fSplits.get(i)[0], fSplits.get(i)[1]));
         }
 
         boolean running = true;
 
         // Track running jobs until none are left.
         while (running) {
-            runningTime(start, jobList.size(), false, "");
+            runningTime(start, fJobList.size(), false, "");
             // Remove jobs if completed.
-            for (int i = 0; i < jobList.size(); i++) {
-                if (jobList.get(i).isComplete()) {
-                    runningTime(start, jobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
-                    String baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
+            for (int i = 0; i < fJobList.size(); i++) {
+                if (fJobList.get(i).isComplete()) {
+                    runningTime(start, fJobList.size(), false, " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]");
+                    // String baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
                     // Model.setModel(baseDir + "part-r-00000", baseDir + "model.txt");
                     // if (splits.get(i)[1] > 1) {
                     //     String prevDir = "/user/rchui2/Phenotype-" + (splits.get(i)[0] - 1) + ".Split-" + (splits.get(i)[1] - 1) + "/";
                     //     Model.updateModel(prevDir + "model.txt", baseDir + "model.txt");
                     // }
+
+                    // backwardManager.run(baseDir + "part-r-00000", phenoList.get(i), baseDir + "model.txt");
                     
-                    jobList.remove(i);
-                    splits.remove(i);
-                    phenoList.remove(i);
+                    fJobList.remove(i);
+                    fSplits.remove(i);
+                    fPhenoList.remove(i);
                 }
             }
-            if (jobList.isEmpty()) {
+            if (fJobList.isEmpty() && bJobList.isEmpty()) {
                 running = false;
             }
             TimeUnit.SECONDS.sleep(2);
         }
-        runningTime(start, jobList.size(), true, "");
+        runningTime(start, fJobList.size(), true, "");
         System.exit(0);
     }
 
