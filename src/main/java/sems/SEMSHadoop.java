@@ -44,6 +44,7 @@ public class SEMSHadoop {
         // Track running jobs until none are left.
         while (running) {
             runningTime(start, fJobList.size(), false, "");
+            int size = fJobList.size();
             // Remove jobs if completed.
             for (int i = 0; i < fJobList.size(); i++) {
                 if (fJobList.get(i).isComplete()) {
@@ -59,14 +60,19 @@ public class SEMSHadoop {
                     }
                     fSplits.remove(i);
                     fPhenoList.remove(i);
+                    i--;
+                    size--;
                 }
             }
 
+            size = bJobList.size();
             for (int i = 0; i < bJobList.size(); i++) {
                 if (bJobList.get(i).isComplete()) {
                     message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
-                    runningTime(start, fJobList.size() + bJobList.size(), false, message);
+                    runningTime(start, bJobList.size() + bJobList.size(), false, message);
                     bJobList.remove(i);
+                    i--;
+                    size--;
                 }
             }
             if (fJobList.isEmpty() && bJobList.isEmpty()) {
