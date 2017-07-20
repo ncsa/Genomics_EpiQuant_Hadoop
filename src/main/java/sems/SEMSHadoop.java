@@ -54,16 +54,17 @@ public class SEMSHadoop {
                     i--;
                     size--;
 
-                    // if (true) {
-                    //     String baseDir = "/user/rchui2/Phenotype-" + fSplits.get(i)[0] + ".Split-" + fSplits.get(i)[1] + "/";
-                    //     message = " [Task = Adding B.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
-                    //     runningTime(start, fJobList.size(), false, message);
+                    if (true) {
+                        String baseDir = "/user/rchui2/Phenotype-" + fSplits.get(i)[0] + ".Split-" + fSplits.get(i)[1] + "/";
+                        message = " [Task = Adding B.P-" + fSplits.get(i)[0] + ".S-" + fSplits.get(i)[1] + "]";
+                        runningTime(start, fJobList.size(), false, message);
                     //     bJobList.add(bManager.run(baseDir + "part-r-00000", fPhenoList.get(i), baseDir));
-                    // }
+                    }
                     fSplits.remove(i);
                     fPhenoList.remove(i);
                 }
             }
+            size = bJobList.size();
             for (int i = 0; i < size; i++) {
                 if (bJobList.get(i).isComplete()) {
                     message = " [Task = Removing B.P-" + bSplits.get(i)[0] + ".S-" + bSplits.get(i)[1] + "]";
