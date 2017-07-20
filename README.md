@@ -1,5 +1,12 @@
 # SEMS-Hadoop
 
+1. getPhenotypes()
+2. Build job list
+3. Start jobs
+4. Check jobs
+5. Forward Manager mapreduce
+6. Backward Manager mapreduce
+
 ## SEMSHadoop.java
 - [ ] Make sure to fix absolute path in baseDir
 - [ ] Job re-adder
