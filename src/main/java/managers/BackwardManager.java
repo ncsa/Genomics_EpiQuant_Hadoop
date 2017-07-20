@@ -84,10 +84,10 @@ public class BackwardManager {
         }
     }
 
-    public Job run(String forwardResult, String y, String modelPath) throws Exception {
+    public Job run(String forwardFile, String y, String modelDir) throws Exception {
         Configuration conf = new Configuration();
         conf.set("y", y);
-        conf.set("outPath", modelPath);
+        conf.set("outPath", modelDir);
         Job job = Job.getInstance(conf, "job manager");
         job.setJarByClass(BackwardManager.class);
         
@@ -101,8 +101,8 @@ public class BackwardManager {
         job.setCombinerClass(MinSigReducer.class);
         job.setReducerClass(MinSigReducer.class);
 
-        FileInputFormat.addInputPath(job, new Path(forwardResult));
-        FileOutputFormat.setOutputPath(job, new Path("temp"));
+        FileInputFormat.addInputPath(job, new Path(forwardFile));
+        FileOutputFormat.setOutputPath(job, new Path("/user/rchui2/temp"));
         
         job.waitForCompletion(true);
         return job;
