@@ -74,9 +74,8 @@ public class JobManager {
         }
     }
 
-    public static class MinSigReducer extends Reducer<Text, Text, DoubleWritable, Text> {
+    public static class MinSigReducer extends Reducer<Text, Text, Text, Text> {
         private Text minX = new Text();
-        private DoubleWritable minP = new DoubleWritable();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             double tempMinP = 0.05;
@@ -85,9 +84,9 @@ public class JobManager {
 
             for (Text val: values) {
                 tokens = val.toString().split("\\t");
-                // If current is greater do nothing.
+                // If current is less do nothing.
                 if (!(tempMinP < Double.parseDouble(tokens[0]))) { 
-                    // If current is less than, replace.
+                    // If current is greater, replace.
                     if (tempMinP > Double.parseDouble(tokens[0])) {
                         tempMinP = Double.parseDouble(tokens[0]);
                         tempMinX = val.toString();
@@ -100,10 +99,8 @@ public class JobManager {
                     }
                 }
             }
-            // tokens = tempMinX.split("\\t");
-            minP.set(tempMinP);
             minX.set(tempMinX);
-            context.write(minP, minX);
+            context.write(key, minX);
         }
     }
 
