@@ -22,21 +22,13 @@ public class Model {
     }
 
     // Writes model to a file.
-    public static void setModel(String inPath, String outPath) throws IOException {
-        // Open reader to get new x.
-        Path path = new Path("hdfs:" + inPath);
+    public static void setModel(String outPath, String model) throws IOException {
+        Path path = new Path(outPath);
         FileSystem fs = FileSystem.get(new Configuration());
-        BufferedReader buffIn = new BufferedReader(new InputStreamReader(fs.open(path)));
-
-        // Separate x from other data.
-        String line = buffIn.readLine();
-        buffIn.close();
-        String tokens[] = line.split("\\t");
-
         // Write new x to new file.
         path = new Path("hdfs:" + outPath);
         BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
-        buffOut.write(tokens[2]);
+        buffOut.write(model);
         buffOut.close();           
     }
 
