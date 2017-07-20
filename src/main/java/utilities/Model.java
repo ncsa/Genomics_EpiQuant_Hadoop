@@ -3,7 +3,9 @@ package utilities;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -27,7 +29,26 @@ public class Model {
     }
 
     // Writes model to a file.
-    public static void setModel() {
+    public static void setModel(String inPath, String outPath) {
+        try {
+            // Open reader to get new x.
+            Path path = new Path("hdfs:" + inPath);
+            FileSystem fs = FileSystem.get(new Configuration());
+            BufferedReader buffIn = new BufferedReader(new InputStreamReader(fs.open(path)));
 
+            // Separate x from other data.
+            String line = buffIn.readLine();
+            buffIn.close();
+            String tokens[] = line.split("\\t");
+
+            // Write new x to new file.
+            path = new Path("hdfs:" + outPath);
+            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
+            buffOut.write(tokens[2]);
+            buffOut.close();           
+        } catch (Exception e) {
+            System.err.println("Could not set model file.");
+            System.exit(1);
+        }
     }
 }
