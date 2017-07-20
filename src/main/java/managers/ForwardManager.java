@@ -5,8 +5,6 @@ import utilities.ConfSet;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
@@ -18,9 +16,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.commons.math.stat.regression.GLSMultipleLinearRegression;
-import org.apache.commons.math.stat.regression.MultipleLinearRegression;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class ForwardManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
@@ -30,19 +28,18 @@ public class ForwardManager {
             String[] tokens;
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
+            double[][] x;
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
-                SimpleRegression regression = new SimpleRegression();
+                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
 
-                // Converts yString, and x tokens to double[].
+                // Converts yString to double[], and x tokens to double[][].
                 // Combines x and y data and adds them to regression object.
-                regression.addData(combineData(convertXNew(tokens), ConfSet.convertY(mapKey)));
+                x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]);
+                regression.newSampleData(ConfSet.convertY(mapKey), x);
                 try {
-                    double significance = regression.getSignificance();
-                    if (significance < 0.05) {
-                        context.write(new Text(mapKey), new Text(Double.toString(significance) + "\t" + getXNewString(tokens)));
-                    }
+                    calculateSignificance(regression, context, mapKey, tokens);
                 } catch (Exception e) {
                     System.err.println("Invalid significance generated.");
                 }
@@ -50,28 +47,19 @@ public class ForwardManager {
             buff.close();
         }
 
-        public static double[] convertXNew(String[] tokens) {
-            double[] xNew = new double[tokens.length - 1];
-            for (int i = 1; i < tokens.length; i++) {
-                xNew[i - 1] = Double.parseDouble(tokens[i]);
-            }
-            return xNew;
-        }
+        // Calculates significance of regressors.
+        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens) throws Exception {
+            final double[] beta = regression.estimateRegressionParameters();
+            final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
+            final int residualdf = regression.estimateResiduals().length - beta.length;
 
-        public static String getXNewString(String[] tokens) {
-            String xOut = tokens[0];
-            for (int i = 1; i < tokens.length; i++) {
-                xOut += "," + tokens[i];
-            }
-            return xOut;
-        }
+            final TDistribution tdistribution = new TDistribution(residualdf);
 
-        public static double[][] combineData(double[] x, double[] y) {
-            double[][] data = new double[x.length][2];
-            for (int i = 0; i < x.length; i++) {
-                data[i] = new double[]{x[i], y[i]};
+            double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
+            double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
+            if (pvalue < 0.05) {
+                context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + ConfSet.getXNewString(tokens)));
             }
-            return data;
         }
     }
 
@@ -123,7 +111,7 @@ public class ForwardManager {
         FileInputFormat.addInputPath(job, new Path(args[1]));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
-        job.submit();
+        job.waitForCompletion(true);
         return job;
     }
 }
