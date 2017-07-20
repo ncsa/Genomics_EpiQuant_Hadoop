@@ -19,9 +19,10 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.commons.math.stat.regression.GLSMultipleLinearRegression;
 import org.apache.commons.math.stat.regression.MultipleLinearRegression;
 
-public class JobManager {
+public class ForwardManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
@@ -108,7 +109,7 @@ public class JobManager {
         Configuration conf = new Configuration();
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
-        job.setJarByClass(JobManager.class);
+        job.setJarByClass(ForwardManager.class);
         
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);

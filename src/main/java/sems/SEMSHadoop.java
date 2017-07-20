@@ -1,6 +1,6 @@
 package sems;
 
-import managers.JobManager;
+import managers.ForwardManager;
 import utilities.Model;
 
 import java.io.BufferedReader;
@@ -22,7 +22,7 @@ public class SEMSHadoop {
         long start = System.nanoTime();
 
         // Submit jobs by to the job list.
-        JobManager jobManager = new JobManager();
+        ForwardManager jobManager = new ForwardManager();
         for (int i = 0; i < phenoList.size(); i++) {
             splits.add(new int[2]);
             splits.get(i)[0] = i; // Phenotype number
