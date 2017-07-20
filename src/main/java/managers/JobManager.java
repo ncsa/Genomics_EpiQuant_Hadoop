@@ -100,9 +100,9 @@ public class JobManager {
                     }
                 }
             }
-            tokens = tempMinX.split("\\t");
-            minX.set(tokens[1]);
+            // tokens = tempMinX.split("\\t");
             minP.set(tempMinP);
+            minX.set(tempMinX);
             context.write(minP, minX);
         }
     }
