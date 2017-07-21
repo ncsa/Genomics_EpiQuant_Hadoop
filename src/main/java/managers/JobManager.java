@@ -23,6 +23,7 @@ import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
@@ -203,7 +204,8 @@ public class JobManager {
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
 
-        // MultipleOutputs.addNamedOutput(job, namedOutput, outputFormatClass, keyClass, valueClass);
+        // MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, Text.class);
+        // MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, Text.class);
 
         job.setJarByClass(JobManager.class);
 
