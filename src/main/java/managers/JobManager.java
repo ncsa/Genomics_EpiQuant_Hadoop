@@ -4,12 +4,15 @@ import utilities.ConfSet;
 import utilities.Model;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.StringReader;
 import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -33,7 +36,7 @@ public class JobManager {
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
             double[][] x;
-            String model = Model.getModel(conf);
+            String model = getModel(conf);
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
@@ -52,21 +55,30 @@ public class JobManager {
             buff.close();
         }
 
+        public static String getModel(Configuration conf) {
+            String model = conf.get("model");
+            if (!".".equals(model)) {
+                return model;
+            } else {
+                return ".";
+            }
+        }
+
         // Calculates significance of regressors.
         public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens, String model) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
-            final int residualdf = regression.estimateResiduals().length - beta.length;
+            final int residualDF = regression.estimateResiduals().length - beta.length;
 
-            final TDistribution tdistribution = new TDistribution(residualdf);
+            final TDistribution tDistribution = new TDistribution(residualDF);
 
             double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
-            double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
-            if (pvalue < 0.05) {
+            double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
+            if (pValue < 0.05) {
                 if (".".equals(model)) {
-                    context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + ConfSet.getXNewString(tokens)));
+                    context.write(new Text(mapKey), new Text(Double.toString(pValue) + "\t" + ConfSet.getXNewString(tokens)));
                 } else {
-                    context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
+                    context.write(new Text(mapKey), new Text(Double.toString(pValue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
                 }
             }
         }
@@ -108,10 +120,12 @@ public class JobManager {
             Configuration conf = context.getConfiguration();
             String baseDir = conf.get("baseDir");
 
+            // Get starter values.
             double[] y = ConfSet.convertY(key.toString());
             String[] values = value.toString().split("\\t");
             String[] xStrings = values[1].split("\\r?\\n");
 
+            // Convert x's to appropriate orientation and type.
             int xLength = xStrings[0].split(",").length;
             double[][] x = new double[xLength - 1][xStrings.length];
             for (int i = 0; i < xStrings.length; i++) {
@@ -121,27 +135,55 @@ public class JobManager {
                 }
             }
 
+            // Calculate significance.
             OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-            if (y.length == x.length) {
-                context.write(key, new Text("true"));
-            } else {
-                context.write(key, new Text("false"));
-            }            
+            regression.newSampleData(y, x);
+            try {
+                setModel(regression, baseDir, xStrings);
+            } catch (Exception e) {
+                System.err.println("Invalid significance generated.");
+            }
+
+            // context.write(new Text(), new Text(values[1]));
         }
 
         // Calculates significance of regressors.
-        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String baseDir, String[] xStrings) throws Exception {
+        public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
-            final int residualdf = regression.estimateResiduals().length - beta.length;
+            final int residualDF = regression.estimateResiduals().length - beta.length;
 
-            final TDistribution tdistribution = new TDistribution(residualdf);
+            final TDistribution tDistribution = new TDistribution(residualDF);
 
-            double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
-            double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
-            if (pvalue < 0.05) {
+            Path path = new Path("hdfs:" + baseDir + "model.txt");
+            FileSystem fs = FileSystem.get(new Configuration());
+            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
+            boolean first = true;
 
+            for (int i = 0; i < beta.length - 1; i++) {
+                double tstat = beta[i] / standardErrors[i];
+                double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
+                if (pValue < 0.05) {
+                    if (first) {
+                        buffOut.write(xStrings[i]);
+                        first = false;
+                    } else {
+                        buffOut.write("\n" + xStrings[i]);
+                    }
+                }
             }
+            if (first) {
+                buffOut.write(xStrings[beta.length - 1]);
+            } else {
+                buffOut.write("\n" + xStrings[beta.length - 1]);
+            }
+            buffOut.close();
+
+            // if (y.length == x.length) {
+            //     context.write(key, new Text("true"));
+            // } else {
+            //     context.write(key, new Text("false"));
+            // }       
         }
     }
 
