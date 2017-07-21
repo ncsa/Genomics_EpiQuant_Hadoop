@@ -134,6 +134,7 @@ public class JobManager {
                 }
             }
             context.write(new Text(), new Text("x" + Integer.toString(x.length)));
+            context.write(new Text(), new Text("x[0]" + Integer.toString(x[0].length)));
             context.write(new Text(), new Text("y" + Integer.toString(y.length)));
 
             // Calculate significance.
