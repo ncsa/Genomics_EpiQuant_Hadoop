@@ -108,7 +108,7 @@ public class JobManager {
             String[] values = value.toString().split("\\t");
             String[] tokens = values[1].split("\\r?\\n");
             Configuration conf = context.getConfiguration();
-            context.write(key, new Text(values[1]));
+            context.write(key, new Text(conf.get("baseDir")));
         }
     }
 
