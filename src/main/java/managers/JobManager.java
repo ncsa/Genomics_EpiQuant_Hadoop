@@ -25,6 +25,7 @@ import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.distribution.TDistribution;
@@ -184,7 +185,7 @@ public class JobManager {
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
         FileInputFormat.addInputPath(job, new Path(jobPath));
-        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+        job.setOutputFormatClass(NullOutputFormat.class);
 
         job.setJarByClass(JobManager.class);
 
