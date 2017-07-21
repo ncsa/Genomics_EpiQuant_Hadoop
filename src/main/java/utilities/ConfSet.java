@@ -1,8 +1,5 @@
 package utilities;
 
-import java.util.Set;
-import java.util.HashSet;
-
 import org.apache.hadoop.conf.Configuration;
 
 public class ConfSet {
