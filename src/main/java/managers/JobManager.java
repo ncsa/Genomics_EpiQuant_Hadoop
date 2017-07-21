@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -105,7 +104,6 @@ public class JobManager {
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            // buff.lines().collect(Collectors.joining());
             context.write(new Text("Hello"), new Text("World"));
         }
     }
