@@ -138,7 +138,7 @@ public class JobManager {
             OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
             regression.newSampleData(y, x);
             try {
-                setModel(regression, baseDir, xStrings);
+                setModel(regression, baseDir, xStrings, context);
             } catch (Exception e) {
                 System.err.println("Invalid significance generated.");
             }
@@ -147,7 +147,7 @@ public class JobManager {
         }
 
         // Calculates significance of regressors.
-        public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings) throws Exception {
+        public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
@@ -158,6 +158,7 @@ public class JobManager {
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
             boolean first = true;
+            context.write(new Text(), new Text("" + beta.length));
 
             for (int i = 0; i < beta.length - 1; i++) {
                 double tstat = beta[i] / standardErrors[i];
@@ -177,12 +178,6 @@ public class JobManager {
                 buffOut.write("\n" + xStrings[beta.length - 1]);
             }
             buffOut.close();
-
-            // if (y.length == x.length) {
-            //     context.write(key, new Text("true"));
-            // } else {
-            //     context.write(key, new Text("false"));
-            // }       
         }
     }
 
