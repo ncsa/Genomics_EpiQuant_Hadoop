@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -24,6 +25,7 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class JobManager {
     public static class LinearRegressionMapper extends Mapper<Object, Text, Text, Text>{
+
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
@@ -31,6 +33,7 @@ public class JobManager {
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
             double[][] x;
+            String model = ConfSet.getModel(conf);
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
@@ -41,7 +44,7 @@ public class JobManager {
                 x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]); // Make sure to +1 index
                 regression.newSampleData(ConfSet.convertY(mapKey), x);
                 try {
-                    calculateSignificance(regression, context, mapKey, tokens);
+                    calculateSignificance(regression, context, mapKey, tokens, model);
                 } catch (Exception e) {
                     System.err.println("Invalid significance generated.");
                 }
@@ -50,7 +53,7 @@ public class JobManager {
         }
 
         // Calculates significance of regressors.
-        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens) throws Exception {
+        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens, String model) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualdf = regression.estimateResiduals().length - beta.length;
@@ -60,7 +63,11 @@ public class JobManager {
             double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
             double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
             if (pvalue < 0.05) {
-                context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + ConfSet.getXNewString(tokens)));
+                if (model.equals("")) {
+                    context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\n" + ConfSet.getXNewString(tokens)));
+                } else {
+                    context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
+                }
             }
         }
     }
@@ -75,16 +82,17 @@ public class JobManager {
 
             for (Text val: values) {
                 tokens = val.toString().split("\\t");
+                double significance = Double.parseDouble(tokens[0]);
                 // If current is less do nothing.
-                if (!(tempMinP < Double.parseDouble(tokens[0]))) { 
+                if (!(tempMinP < significance)) { 
                     // If current is greater, replace.
-                    if (tempMinP > Double.parseDouble(tokens[0])) {
-                        tempMinP = Double.parseDouble(tokens[0]);
+                    if (tempMinP > significance) {
+                        tempMinP = significance;
                         tempMinX = val.toString();
                     } else { // If equal, randomly replace.
                         Random r = new Random();
                         if (r.nextBoolean()) {
-                            tempMinP = Double.parseDouble(tokens[0]);
+                            tempMinP = significance;
                             tempMinX = val.toString();
                         }
                     }
@@ -97,12 +105,14 @@ public class JobManager {
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            // buff.lines().collect(Collectors.joining());
             context.write(new Text("Hello"), new Text("World"));
         }
     }
 
-    public Job run(String jobPath, String y, int phenotype, int split) throws Exception {
+    public Job run(String jobPath, String y, String model, int phenotype, int split) throws Exception {
         Configuration conf = new Configuration();
+        conf.set("model", model);
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
 
