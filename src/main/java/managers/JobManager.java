@@ -14,6 +14,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
+import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.commons.math3.util.FastMath;
@@ -21,7 +23,7 @@ import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class JobManager {
-    public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
+    public static class LinearRegressionMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
             String line;
@@ -63,7 +65,7 @@ public class JobManager {
         }
     }
 
-    public static class MinSigReducer extends Reducer<Text, Text, Text, Text> {
+    public static class MinimumSignificanceReducer extends Reducer<Text, Text, Text, Text> {
         private Text minX = new Text();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -93,25 +95,30 @@ public class JobManager {
         }
     }
 
+    public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
+        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            context.write(key, value);
+        }
+    }
+
     public Job run(String jobPath, String y, int phenotype, int split) throws Exception {
         Configuration conf = new Configuration();
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
-        job.setJarByClass(JobManager.class);
-        
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
-        job.setOutputKeyClass(DoubleWritable.class);
-        job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(LinRegMapper.class);
-        job.setCombinerClass(MinSigReducer.class);
-        job.setReducerClass(MinSigReducer.class);
+        Configuration chainMapperConf = new Configuration(false);
+        ChainMapper.addMapper(job, LinearRegressionMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
+
+        Configuration chainReducerConf = new Configuration(false);
+        ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
+        ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
+
+        job.setJarByClass(JobManager.class);
 
         FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
-        job.submit();
+        job.waitForCompletion(true);
         return job;
     }
 }
