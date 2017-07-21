@@ -20,7 +20,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
-public class ForwardManager {
+public class JobManager {
     public static class LinRegMapper extends Mapper<Object, Text, Text, Text>{
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
@@ -93,11 +93,11 @@ public class ForwardManager {
         }
     }
 
-    public Job run(String[] args, String y, int phenotype, int split) throws Exception {
+    public Job run(String jobPath, String y, int phenotype, int split) throws Exception {
         Configuration conf = new Configuration();
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
-        job.setJarByClass(ForwardManager.class);
+        job.setJarByClass(JobManager.class);
         
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
@@ -108,7 +108,7 @@ public class ForwardManager {
         job.setCombinerClass(MinSigReducer.class);
         job.setReducerClass(MinSigReducer.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[1]));
+        FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
         job.submit();
