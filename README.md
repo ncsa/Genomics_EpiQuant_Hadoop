@@ -1,4 +1,6 @@
 # SEMS-Hadoop
+Model ("\n")
+Delimiter ("\t")
 
 1. getPhenotypes()
 2. Build job list
