@@ -115,9 +115,9 @@ public class JobManager {
             double[][] x = new double[xLength][];
             for (int i = 0; i < xStrings.length; i++) {
                 String[] xValues = xStrings[i].split(",");
-                // for (int j = 0; j < xLength; j++) {
-                //     x[j][i] = Double.parseDouble(xValues[j + 1]);
-                // }
+                for (int j = 0; j < xValues.length; j++) {
+                    x[j][i] = Double.parseDouble(xValues[j + 1]);
+                }
             }
 
             context.write(key, new Text(xStrings[0]));
