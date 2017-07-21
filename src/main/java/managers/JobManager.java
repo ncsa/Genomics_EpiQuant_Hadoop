@@ -16,6 +16,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.lib.MultipleOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -58,7 +59,7 @@ public class JobManager {
             buff.close();
         }
 
-        public static String getModel(Configuration conf) {
+        public String getModel(Configuration conf) {
             String model = conf.get("model");
             if (!".".equals(model)) {
                 return model;
@@ -68,7 +69,7 @@ public class JobManager {
         }
 
         // Calculates significance of regressors.
-        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens, String model) throws Exception {
+        public void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String mapKey, String[] tokens, String model) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
@@ -119,6 +120,13 @@ public class JobManager {
     }
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
+        private MultipleOutputs<Text, Text> mos;
+
+        @Override
+        public void setup(Context context) throws IOException, InterruptedException {
+            mos = new MultipleOutputs<Text,Text>(context);
+        }
+
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
             String baseDir = conf.get("baseDir");
@@ -147,49 +155,25 @@ public class JobManager {
                 System.err.println("Invalid significance generated.");
             }
 
-            // context.write(new Text(), new Text(values[1]));
+            mos.write("significance", new Text(), new Text(values[1]));
         }
 
         // Set model based off of significance of regressors.
-        public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
+        public void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
 
             final TDistribution tDistribution = new TDistribution(residualDF);
 
-            Path path = new Path("hdfs:" + baseDir + "model.txt");
-            FileSystem fs = FileSystem.get(new Configuration());
-            FSDataOutputStream fOut = fs.create(path);
-            if (fs.exists(path)) {
-                context.write(new Text(), new Text("true"));
-            } else {
-                context.write(new Text(), new Text("false"));
-            }
-            boolean first = true;
-
             for (int i = 1; i < beta.length - 1; i++) {
                 double tstat = beta[i] / standardErrors[i];
                 double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
                 if (pValue < 0.05) {
-                    if (first) {
-                        fOut.write(xStrings[i].getBytes());
-                        first = false;
-                    } else {
-                        fOut.write(("\n" + xStrings[i]).getBytes());
-                    }
+                    mos.write("model", new Text(), new Text(xStrings[i]));
                 }
             }
-            if (first) {
-                fOut.write(xStrings[beta.length - 1].getBytes());
-                first = false;
-            } else {
-                fOut.write(("\n" + xStrings[beta.length - 1]).getBytes());
-            }
-            fOut.flush();
-            fOut.sync();
-            fOut.close();
-            fs.close();
+            mos.write("model", new Text(), new Text(xStrings[beta.length - 1]));
         }
     }
 
@@ -207,13 +191,12 @@ public class JobManager {
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
 
-        // MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, Text.class);
-        // MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, Text.class);
-
         job.setJarByClass(JobManager.class);
 
         FileInputFormat.addInputPath(job, new Path(jobPath));
-        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+        MultipleOutputs.addNamedOutput(job, "significance", FileOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, "model", FileOutputFormat.class, Text.class, Text.class);
+        // FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
         job.waitForCompletion(true);
         return job;
