@@ -157,8 +157,12 @@ public class JobManager {
 
             Path path = new Path("hdfs:" + baseDir + "model.txt");
             FileSystem fs = FileSystem.get(new Configuration());
-            OutputStream outStream = fs.create(path);
-            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(outStream));
+            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
+            if (fs.exists(path)) {
+                context.write(new Text(), new Text("true"));
+            } else {
+                context.write(new Text(), new Text("true"));
+            }
             boolean first = true;
 
             for (int i = 1; i < beta.length - 1; i++) {
