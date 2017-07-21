@@ -104,7 +104,7 @@ public class JobManager {
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            context.write(new Text("Hello"), new Text("World"));
+            context.write(key, value);
         }
     }
 
