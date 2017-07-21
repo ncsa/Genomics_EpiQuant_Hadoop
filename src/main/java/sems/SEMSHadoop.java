@@ -30,7 +30,7 @@ public class SEMSHadoop {
             splits.get(i)[1] = 1; // Split number
             message = " [Task = Adding F.P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
             runningTime(start, jobList.size(), false, message);
-            jobList.add(jobManager.run(args[1], phenoList.get(i), "@@@", splits.get(i)[0], splits.get(i)[1]));
+            jobList.add(jobManager.run(args[1], phenoList.get(i), "", splits.get(i)[0], splits.get(i)[1]));
         }
 
         boolean running = true;

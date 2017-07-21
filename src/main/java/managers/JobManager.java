@@ -63,7 +63,7 @@ public class JobManager {
             double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
             double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
             if (pvalue < 0.05) {
-                if (model.equals("@@@")) {
+                if (model.equals("")) {
                     context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\n" + ConfSet.getXNewString(tokens)));
                 } else {
                     context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
