@@ -182,6 +182,7 @@ public class JobManager {
         conf.set("baseDir", baseDir);
         conf.set("model", model);
         conf.set("y", y);
+        conf.set("mapreduce.textoutputformat.separator", "");
         Job job = Job.getInstance(conf, "job manager");
         FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
