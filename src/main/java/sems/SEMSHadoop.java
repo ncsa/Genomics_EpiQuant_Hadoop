@@ -28,7 +28,7 @@ public class SEMSHadoop {
             splits.get(i)[0] = i; // Phenotype number
             splits.get(i)[1] = 1; // Split number
 
-            message = " [Task = Adding F.P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
+            message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
             runningTime(start, jobList.size(), false, message);
 
             baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
@@ -45,16 +45,19 @@ public class SEMSHadoop {
             // Remove jobs if completed.
             for (int i = 0; i < size; i++) {
                 if (jobList.get(i).isComplete()) {
-                    message = " [Task = Removing F.P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
+                    message = " [Task = Removing P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                     runningTime(start, jobList.size(), false, message);
                     jobList.remove(i);
 
-                    baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
+                    splits.get(i)[1]++;
+                    baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] +  "/";
                     if (!isDone(baseDir)) {
-                        System.out.println("Not done.");
-                    //     baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
-                    //     message = " [Task = Adding B.P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
-                    //     runningTime(start, jobList.size(), false, message);
+                        message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
+                        runningTime(start, jobList.size(), false, message);
+                        String prevDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + (splits.get(i)[1] - 1) +  "/";
+                        jobList.add(jobManager.run(args[1], phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
+                        phenoList.add(phenoList.remove(i));
+                        splits.add(splits.remove(i));
                     }
 
                     i--;
@@ -110,6 +113,18 @@ public class SEMSHadoop {
             return false;
         }
         return true;
+    }
+
+    public static String getModel(String baseDir) throws IOException {
+        Path path = new Path("hdfs:" + baseDir + "model-r-00000");
+        FileSystem fs = FileSystem.get(new Configuration());
+        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
+        String model = buff.readLine();
+        String line;
+        while ((line = buff.readLine()) != null) {
+            model += "\n" + line;
+        }
+        return model;
     }
 
     // Gets phenotypes (y values) from the specified phenotype file.

@@ -26,6 +26,15 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class JobManager {
     public static class LinearRegressionMapper extends Mapper<Object, Text, Text, Text>{
+        private double[][] x;
+        private String model;
+
+        @Override
+        public void setup(Context context) throws IOException, InterruptedException {
+            Configuration conf = context.getConfiguration();
+            model = getModel(conf);
+            x = convertModel(model);
+        }
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             BufferedReader buff = new BufferedReader(new StringReader(value.toString()));
@@ -33,8 +42,6 @@ public class JobManager {
             String[] tokens;
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
-            double[][] x;
-            String model = getModel(conf);
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
@@ -42,7 +49,7 @@ public class JobManager {
 
                 // Converts yString to double[], and x tokens to double[][].
                 // Combines x and y data and adds them to regression object.
-                x = ConfSet.combineX(tokens, new double[tokens.length - 1][1]); // Make sure to +1 index
+                x = ConfSet.combineX(tokens, x); // Make sure to +1 index
                 regression.newSampleData(ConfSet.convertY(mapKey), x);
                 try {
                     calculateSignificance(regression, context, mapKey, tokens, model);
@@ -60,6 +67,19 @@ public class JobManager {
             } else {
                 return ".";
             }
+        }
+
+        public double[][] convertModel(String model) {
+            String[] snpStrings = model.split("\\r?\\n");
+            int snpLength = snpStrings[0].split(",").length;
+            double[][] x = new double[snpLength - 1][snpStrings.length + 1];
+            for (int i = 0; i < snpStrings.length; i++) {
+                String[] snpValues = snpStrings[i].split(",");
+                for (int j = 1; j < snpValues.length; j++) {
+                    x[j - 1][i] = Double.parseDouble(snpValues[j]);
+                }
+            }
+            return x;
         }
 
         // Calculates significance of regressors.
