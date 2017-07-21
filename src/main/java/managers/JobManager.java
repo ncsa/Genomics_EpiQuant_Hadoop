@@ -146,8 +146,9 @@ public class JobManager {
             // context.write(new Text(), new Text(values[1]));
         }
 
-        // Calculates significance of regressors.
+        // Set model based off of significance of regressors.
         public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
+            context.write(new Text(), new Text("Hello World"));
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
@@ -158,7 +159,7 @@ public class JobManager {
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
             boolean first = true;
-            context.write(new Text(), new Text("" + beta.length));
+            
 
             for (int i = 0; i < beta.length - 1; i++) {
                 double tstat = beta[i] / standardErrors[i];
