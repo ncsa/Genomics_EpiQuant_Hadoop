@@ -155,7 +155,7 @@ public class JobManager {
                 System.err.println("Invalid significance generated.");
             }
 
-            mos.write("significance", new Text(), new Text(values[1]));
+            mos.write("significance", new Text(), new Text(values[0]));
         }
 
         // Set model based off of significance of regressors.
@@ -170,10 +170,10 @@ public class JobManager {
                 double tstat = beta[i] / standardErrors[i];
                 double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
                 if (pValue < 0.05) {
-                    mos.write("model", new Text(), new Text(xStrings[i]));
+                    mos.write("model", new Text(), new Text(xStrings[i - 1]));
                 }
             }
-            mos.write("model", new Text(), new Text(xStrings[beta.length - 1]));
+            mos.write("model", new Text(), new Text(xStrings[beta.length - 2]));
         }
     }
 
