@@ -121,7 +121,27 @@ public class JobManager {
                 }
             }
 
-            context.write(key, new Text(xStrings[0]));
+            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+            if (y.length == x.length) {
+                context.write(key, new Text("true"));
+            } else {
+                context.write(key, new Text("false"));
+            }            
+        }
+
+        // Calculates significance of regressors.
+        public static void calculateSignificance(OLSMultipleLinearRegression regression, Context context, String baseDir, String[] xStrings) throws Exception {
+            final double[] beta = regression.estimateRegressionParameters();
+            final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
+            final int residualdf = regression.estimateResiduals().length - beta.length;
+
+            final TDistribution tdistribution = new TDistribution(residualdf);
+
+            double tstat = beta[beta.length - 1] / standardErrors[beta.length - 1];
+            double pvalue = tdistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
+            if (pvalue < 0.05) {
+
+            }
         }
     }
 
