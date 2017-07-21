@@ -37,13 +37,4 @@ public class ConfSet {
         }
         return y;
     }
-
-    public static String getModel(Configuration conf) {
-        String model = conf.get("model");
-        if (!model.equals("")) {
-            return model;
-        } else {
-            return "";
-        }
-    }
 }

@@ -34,4 +34,13 @@ public class Model {
             buffOut.close();   
         }        
     }
+
+    public static String getModel(Configuration conf) {
+        String model = conf.get("model");
+        if (!model.equals("")) {
+            return model;
+        } else {
+            return "";
+        }
+    }
 }
