@@ -3,6 +3,7 @@ package managers;
 import utilities.ConfSet;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -156,7 +157,8 @@ public class JobManager {
 
             Path path = new Path("hdfs:" + baseDir + "model.txt");
             FileSystem fs = FileSystem.get(new Configuration());
-            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
+            OutputStream outStream = fs.create(path);
+            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(outStream));
             boolean first = true;
 
             for (int i = 1; i < beta.length - 1; i++) {
@@ -178,6 +180,7 @@ public class JobManager {
                 buffOut.write("\n" + xStrings[beta.length - 1]);
             }
             buffOut.close();
+            fs.close();
         }
     }
 
