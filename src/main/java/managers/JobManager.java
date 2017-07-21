@@ -113,15 +113,12 @@ public class JobManager {
             String[] xStrings = values[1].split("\\r?\\n");
 
             int xLength = xStrings[0].split(",").length;
-            double[][] x = new double[xLength][];
-            String out = "";
-
+            double[][] x = new double[xLength - 1][xStrings.length];
             for (int i = 0; i < xStrings.length; i++) {
                 String[] xValues = xStrings[i].split(",");
-                out = xValues[1];
-                // for (int j = 0; j < xValues.length; j++) {
-                //     x[j][i] = Double.parseDouble(xValues[j + 1]);
-                // }
+                for (int j = 1; j < xValues.length; j++) {
+                    x[j - 1][i] = Double.parseDouble(xValues[j]);
+                }
             }
 
             context.write(key, new Text(xStrings[0]));
