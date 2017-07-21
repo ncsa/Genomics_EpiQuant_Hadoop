@@ -133,9 +133,6 @@ public class JobManager {
                     x[j - 1][i] = Double.parseDouble(xValues[j]);
                 }
             }
-            context.write(new Text(), new Text("x" + Integer.toString(x.length)));
-            context.write(new Text(), new Text("x[0]" + Integer.toString(x[0].length)));
-            context.write(new Text(), new Text("y" + Integer.toString(y.length)));
 
             // Calculate significance.
             OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
@@ -152,7 +149,6 @@ public class JobManager {
         // Set model based off of significance of regressors.
         public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
-            context.write(new Text(), new Text("b" + Integer.toString(beta.length)));
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
 
@@ -162,9 +158,8 @@ public class JobManager {
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
             boolean first = true;
-            
 
-            for (int i = 0; i < beta.length - 1; i++) {
+            for (int i = 1; i < beta.length - 1; i++) {
                 double tstat = beta[i] / standardErrors[i];
                 double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
                 if (pValue < 0.05) {
@@ -178,6 +173,7 @@ public class JobManager {
             }
             if (first) {
                 buffOut.write(xStrings[beta.length - 1]);
+                first = false;
             } else {
                 buffOut.write("\n" + xStrings[beta.length - 1]);
             }
