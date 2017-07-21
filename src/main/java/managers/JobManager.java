@@ -106,9 +106,9 @@ public class JobManager {
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             String[] values = value.toString().split("\\t");
-            // String[] tokens = values[2].split("\\r?\\n");
+            String[] tokens = values[1].split("\\r?\\n");
             Configuration conf = context.getConfiguration();
-            context.write(key, value);
+            context.write(key, new Text(values[1]));
         }
     }
 
