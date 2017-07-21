@@ -22,6 +22,7 @@ import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
@@ -161,7 +162,7 @@ public class JobManager {
             if (fs.exists(path)) {
                 context.write(new Text(), new Text("true"));
             } else {
-                context.write(new Text(), new Text("true"));
+                context.write(new Text(), new Text("false"));
             }
             boolean first = true;
 
@@ -201,6 +202,8 @@ public class JobManager {
         Configuration chainReducerConf = new Configuration(false);
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
+
+        MultipleOutputs.addNamedOutput(job, namedOutput, outputFormatClass, keyClass, valueClass);
 
         job.setJarByClass(JobManager.class);
 
