@@ -116,7 +116,7 @@ public class JobManager {
             String out = "";
             for (int i = 0; i < xStrings.length; i++) {
                 String[] xValues = xStrings[i].split(",");
-                out = xValues[0];
+                out = xValues[1];
                 // for (int j = 0; j < xValues.length; j++) {
                 //     x[j][i] = Double.parseDouble(xValues[j + 1]);
                 // }
