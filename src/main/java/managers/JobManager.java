@@ -66,7 +66,7 @@ public class JobManager {
                 if (".".equals(model)) {
                     context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + ConfSet.getXNewString(tokens)));
                 } else {
-                    context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
+                    // context.write(new Text(mapKey), new Text(Double.toString(pvalue) + "\t" + model + "\n" + ConfSet.getXNewString(tokens)));
                 }
             }
         }
