@@ -105,12 +105,16 @@ public class JobManager {
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            context.write(key, value);
+            String[] values = value.toString().split("\\t");
+            String[] tokens = values[2].split("[\\r\\n]+");
+            Configuration conf = context.getConfiguration();
+            context.write(key, new Text(values[1]));
         }
     }
 
-    public Job run(String jobPath, String y, String model, int phenotype, int split) throws Exception {
+    public Job run(String jobPath, String y, String model, String baseDir, int phenotype, int split) throws Exception {
         Configuration conf = new Configuration();
+        conf.set("baseDir", baseDir);
         conf.set("model", model);
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
