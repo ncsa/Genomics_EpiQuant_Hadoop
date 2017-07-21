@@ -196,7 +196,7 @@ public class JobManager {
         FileInputFormat.addInputPath(job, new Path(jobPath));
         MultipleOutputs.addNamedOutput(job, "significance", FileOutputFormat.class, Text.class, Text.class);
         MultipleOutputs.addNamedOutput(job, "model", FileOutputFormat.class, Text.class, Text.class);
-        // FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
         
         job.waitForCompletion(true);
         return job;
