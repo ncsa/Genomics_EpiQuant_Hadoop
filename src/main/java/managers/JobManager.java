@@ -1,7 +1,6 @@
 package managers;
 
 import utilities.ConfSet;
-import utilities.Model;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
