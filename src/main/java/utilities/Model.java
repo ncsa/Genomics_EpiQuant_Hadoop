@@ -40,7 +40,7 @@ public class Model {
         if (!".".equals(model)) {
             return model;
         } else {
-            return "";
+            return ".";
         }
     }
 }
