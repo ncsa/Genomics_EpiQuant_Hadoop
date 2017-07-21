@@ -3,20 +3,14 @@ package managers;
 import utilities.ConfSet;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.StringReader;
 import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.lib.MultipleOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -119,12 +113,12 @@ public class JobManager {
         }
     }
 
-    public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
-        private MultipleOutputs<Text, Text> mos;
+    public static class ModelMapper extends Mapper<Text, Text, Text, NullWritable>{
+        private MultipleOutputs<Text, NullWritable> mos;
 
         @Override
         public void setup(Context context) throws IOException, InterruptedException {
-            mos = new MultipleOutputs<Text,Text>(context);
+            mos = new MultipleOutputs<Text, NullWritable>(context);
         }
 
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -150,16 +144,16 @@ public class JobManager {
             OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
             regression.newSampleData(y, x);
             try {
-                setModel(regression, baseDir, xStrings, context);
+                setModel(regression, baseDir, xStrings);
             } catch (Exception e) {
                 System.err.println("Invalid significance generated.");
             }
 
-            mos.write("significance", new Text(), new Text(values[0]));
+            mos.write("significance", new Text(values[0]), NullWritable.get());
         }
 
         // Set model based off of significance of regressors.
-        public void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
+        public void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
@@ -170,10 +164,10 @@ public class JobManager {
                 double tstat = beta[i] / standardErrors[i];
                 double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
                 if (pValue < 0.05) {
-                    mos.write("model", new Text(), new Text(xStrings[i - 1]));
+                    mos.write("model", new Text(xStrings[i - 1]), NullWritable.get());
                 }
             }
-            mos.write("model", new Text(), new Text(xStrings[beta.length - 2]));
+            mos.write("model", new Text(xStrings[beta.length - 2]), NullWritable.get());
         }
     }
 
@@ -182,6 +176,7 @@ public class JobManager {
         conf.set("baseDir", baseDir);
         conf.set("model", model);
         conf.set("y", y);
+        conf.set("mapreduce.textoutputformat.separator", "");
         Job job = Job.getInstance(conf, "job manager");
         FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
@@ -194,10 +189,10 @@ public class JobManager {
         Configuration chainReducerConf = new Configuration(false);
         chainReducerConf.set("mapreduce.textoutputformat.separator", "");
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
-        ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
+        ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainReducerConf);
 
-        MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, Text.class);
-        MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, NullWritable.class);
+        MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, NullWritable.class);
         
         job.waitForCompletion(true);
         return job;
