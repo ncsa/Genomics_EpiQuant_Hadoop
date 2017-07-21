@@ -1,6 +1,7 @@
 package managers;
 
 import utilities.ConfSet;
+import utilities.Model;
 
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ public class JobManager {
             Configuration conf = context.getConfiguration();
             String mapKey = ConfSet.getY(conf);
             double[][] x;
-            String model = ConfSet.getModel(conf);
+            String model = Model.getModel(conf);
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
