@@ -109,6 +109,7 @@ public class SEMSHadoop {
                 phenoList.add(line);
             }
             buff.close();
+            fs.close();
             return phenoList;
         } catch (Exception e) {
             System.err.println("Could not parse a phenotype file.");
