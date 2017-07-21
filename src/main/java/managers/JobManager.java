@@ -111,9 +111,11 @@ public class JobManager {
             double[] y = ConfSet.convertY(key.toString());
             String[] values = value.toString().split("\\t");
             String[] xStrings = values[1].split("\\r?\\n");
+
             int xLength = xStrings[0].split(",").length;
             double[][] x = new double[xLength][];
             String out = "";
+
             for (int i = 0; i < xStrings.length; i++) {
                 String[] xValues = xStrings[i].split(",");
                 out = xValues[1];
@@ -122,7 +124,7 @@ public class JobManager {
                 // }
             }
 
-            context.write(key, new Text(out));
+            context.write(key, new Text(xStrings[0]));
         }
     }
 
