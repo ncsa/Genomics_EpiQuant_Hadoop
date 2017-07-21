@@ -49,11 +49,13 @@ public class SEMSHadoop {
                     runningTime(start, jobList.size(), false, message);
                     jobList.remove(i);
 
-                    // if (true) {
+                    baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
+                    if (!isDone(baseDir)) {
+                        System.out.println("Not done.");
                     //     baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
                     //     message = " [Task = Adding B.P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                     //     runningTime(start, jobList.size(), false, message);
-                    // }
+                    }
 
                     i--;
                     size--;
@@ -95,6 +97,19 @@ public class SEMSHadoop {
         } else {
             System.out.println("[" + hours + "h:" + minutes + "m:" + seconds + "s] [Status = Running....] [Jobs = " + size + "]" + message);
         }
+    }
+
+    public static boolean isDone(String baseDir) throws IOException{
+        Path path = new Path("hdfs:" + baseDir + "significance-r-00000");
+        FileSystem fs = FileSystem.get(new Configuration());
+        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
+        String line = buff.readLine().trim();
+        buff.close();
+        fs.close();
+        if (Double.parseDouble(line) < 0.05) {
+            return false;
+        }
+        return true;
     }
 
     // Gets phenotypes (y values) from the specified phenotype file.
