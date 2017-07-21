@@ -105,10 +105,22 @@ public class JobManager {
 
     public static class ModelMapper extends Mapper<Text, Text, Text, Text>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            String[] values = value.toString().split("\\t");
-            String[] tokens = values[1].split("\\r?\\n");
             Configuration conf = context.getConfiguration();
-            context.write(key, new Text(conf.get("baseDir")));
+            String baseDir = conf.get("baseDir");
+
+            double[] y = ConfSet.convertY(key.toString());
+            String[] values = value.toString().split("\\t");
+            String[] xStrings = values[1].split("\\r?\\n");
+            int xLength = xStrings[0].split(",").length;
+            double[][] x = new double[xLength][];
+            // for (int i = 0; i < xStrings.length; i++) {
+            //     String[] xValues = xStrings[i].split(",");
+            //     for (int j = 0; j < xLength; j++) {
+            //         x[j][i] = Double.parseDouble(xValues[j + 1]);
+            //     }
+            // }
+
+            context.write(key, new Text(xStrings[0]));
         }
     }
 
