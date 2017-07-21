@@ -183,6 +183,10 @@ public class JobManager {
         conf.set("model", model);
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
+        FileInputFormat.addInputPath(job, new Path(jobPath));
+        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+
+        job.setJarByClass(JobManager.class);
 
         Configuration chainMapperConf = new Configuration(false);
         ChainMapper.addMapper(job, LinearRegressionMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
@@ -191,12 +195,8 @@ public class JobManager {
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
 
-        job.setJarByClass(JobManager.class);
-
-        FileInputFormat.addInputPath(job, new Path(jobPath));
-        MultipleOutputs.addNamedOutput(job, "significance", FileOutputFormat.class, Text.class, Text.class);
-        MultipleOutputs.addNamedOutput(job, "model", FileOutputFormat.class, Text.class, Text.class);
-        FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
+        MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, Text.class);
         
         job.waitForCompletion(true);
         return job;
