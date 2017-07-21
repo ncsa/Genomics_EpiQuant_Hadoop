@@ -37,7 +37,7 @@ public class Model {
 
     public static String getModel(Configuration conf) {
         String model = conf.get("model");
-        if (!model.equals("")) {
+        if (!"".equals(model)) {
             return model;
         } else {
             return "";
