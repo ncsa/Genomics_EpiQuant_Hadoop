@@ -203,7 +203,7 @@ public class JobManager {
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
 
-        MultipleOutputs.addNamedOutput(job, namedOutput, outputFormatClass, keyClass, valueClass);
+        // MultipleOutputs.addNamedOutput(job, namedOutput, outputFormatClass, keyClass, valueClass);
 
         job.setJarByClass(JobManager.class);
 
