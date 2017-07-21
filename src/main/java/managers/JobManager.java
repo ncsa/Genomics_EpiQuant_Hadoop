@@ -133,6 +133,8 @@ public class JobManager {
                     x[j - 1][i] = Double.parseDouble(xValues[j]);
                 }
             }
+            context.write(new Text(), new Text("x" + Integer.toString(x.length)));
+            context.write(new Text(), new Text("y" + Integer.toString(y.length)));
 
             // Calculate significance.
             OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
@@ -149,7 +151,7 @@ public class JobManager {
         // Set model based off of significance of regressors.
         public static void setModel(OLSMultipleLinearRegression regression, String baseDir, String[] xStrings, Context context) throws Exception {
             final double[] beta = regression.estimateRegressionParameters();
-            context.write(new Text(), new Text(Integer.toString(beta.length)));
+            context.write(new Text(), new Text("b" + Integer.toString(beta.length)));
             final double[] standardErrors = regression.estimateRegressionParametersStandardErrors();
             final int residualDF = regression.estimateResiduals().length - beta.length;
 
