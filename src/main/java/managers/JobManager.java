@@ -12,6 +12,7 @@ import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
@@ -159,7 +160,7 @@ public class JobManager {
 
             Path path = new Path("hdfs:" + baseDir + "model.txt");
             FileSystem fs = FileSystem.get(new Configuration());
-            BufferedWriter buffOut = new BufferedWriter(new OutputStreamWriter(fs.create(path)));
+            FSDataOutputStream fOut = fs.create(path);
             if (fs.exists(path)) {
                 context.write(new Text(), new Text("true"));
             } else {
@@ -172,20 +173,22 @@ public class JobManager {
                 double pValue = tDistribution.cumulativeProbability(-FastMath.abs(tstat)) * 2;
                 if (pValue < 0.05) {
                     if (first) {
-                        buffOut.write(xStrings[i]);
+                        fOut.write(xStrings[i].getBytes());
                         first = false;
                     } else {
-                        buffOut.write("\n" + xStrings[i]);
+                        fOut.write(("\n" + xStrings[i]).getBytes());
                     }
                 }
             }
             if (first) {
-                buffOut.write(xStrings[beta.length - 1]);
+                fOut.write(xStrings[beta.length - 1].getBytes());
                 first = false;
             } else {
-                buffOut.write("\n" + xStrings[beta.length - 1]);
+                fOut.write(("\n" + xStrings[beta.length - 1]).getBytes());
             }
-            buffOut.close();
+            fOut.flush();
+            fOut.sync();
+            fOut.close();
             fs.close();
         }
     }
