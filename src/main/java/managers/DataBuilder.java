@@ -61,7 +61,6 @@ public class DataBuilder {
 
     public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable> {
         public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
-            context.write(key, NullWritable.get());
             String[] fileTokens = key.toString().split("\\t");
             String[] valueTokens = values.toString().split("\\t");
             double[] outDoubles = new double[fileTokens.length - 1];
@@ -73,6 +72,7 @@ public class DataBuilder {
                 outString += "\t" + outDoubles[i];
             }
             context.write(new Text(outString), NullWritable.get());
+            context.write(key, NullWritable.get());
         }
     }
 
