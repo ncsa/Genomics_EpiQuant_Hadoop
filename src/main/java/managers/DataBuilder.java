@@ -65,18 +65,18 @@ public class DataBuilder {
 
     public static class ElementMapper extends Mapper<Text, Text, Text, NullWritable>{
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            // String[] fileTokens = key.toString().split("\\t");
-            // String[] valueTokens = value.toString().split("\\t");
-            // double[] outDoubles = new double[fileTokens.length - 1];
-            // for (int i = 0; i < outDoubles.length; i++) {
-            //     outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
-            // }
-            // String outString = fileTokens[0] + ":::" + valueTokens[0];
-            // for (int i = 0; i < outDoubles.length; i++) {
-            //     outString += "\t" + outDoubles[i];
-            // }
-            context.write(new Text("Hello World"), NullWritable.get());
-            // context.write(key, NullWritable.get());
+            String[] fileTokens = key.toString().split("\\t");
+            String[] valueTokens = value.toString().split("\\t");
+            double[] outDoubles = new double[fileTokens.length - 1];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
+            }
+            String outString = fileTokens[0] + ":::" + valueTokens[0];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outString += "\t" + outDoubles[i];
+            }
+            context.write(new Text(outString), NullWritable.get());
+            context.write(key, NullWritable.get());
         }
     }
 
