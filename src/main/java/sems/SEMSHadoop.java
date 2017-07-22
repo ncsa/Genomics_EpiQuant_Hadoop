@@ -21,8 +21,8 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         // DataBuilder dataBuilder = new DataBuilder();
         // dataBuilder.run(args[1], "DataBuilder");
-        DataCleaner dataCleaner = new DataCleaner();
-        dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
+        // DataCleaner dataCleaner = new DataCleaner();
+        // dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
 
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
@@ -41,7 +41,8 @@ public class SEMSHadoop {
             runningTime(start, jobList.size(), false, message);
 
             baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
-            jobList.add(jobManager.run("/user/rchui2/DataCleaner", phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
+            // jobList.add(jobManager.run("/user/rchui2/DataCleaner", phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
+            jobList.add(jobManager.run(args[1], phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
         }
 
         boolean running = true;
