@@ -15,6 +15,8 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
+        System.out.println(countLines("/user/rchui2/data/snps.txt"));
+        System.exit(0);
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
         ArrayList<int[]> splits = new ArrayList<int[]>();
@@ -153,7 +155,14 @@ public class SEMSHadoop {
         return null;
     }
 
-    public static void backStep() {
-
+    public static long countLines(String filePath) throws IOException {
+        Path path = new Path("hdfs:" + filePath);
+        FileSystem fs = FileSystem.get(new Configuration());
+        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
+        long count = 0;
+        while (buff.readLine() != null) {
+            count++;
+        }
+        return count;
     }
 }
