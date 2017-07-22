@@ -85,7 +85,7 @@ public class DataBuilder {
 
         Configuration chainMapperConf = new Configuration(false);
         ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
-        ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
+        ChainMapper.addMapper(job, TokenMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainMapperConf);
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputDir));
