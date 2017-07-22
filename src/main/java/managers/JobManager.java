@@ -214,7 +214,6 @@ public class JobManager {
         conf.set("baseDir", baseDir);
         conf.set("model", model);
         conf.set("y", y);
-        conf.set("mapreduce.textoutputformat.separator", "");
         Job job = Job.getInstance(conf, "job manager");
         FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
@@ -225,7 +224,6 @@ public class JobManager {
         ChainMapper.addMapper(job, LinearRegressionMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
 
         Configuration chainReducerConf = new Configuration(false);
-        chainReducerConf.set("mapreduce.textoutputformat.separator", "");
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainReducerConf);
 
