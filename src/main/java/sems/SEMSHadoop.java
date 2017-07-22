@@ -19,8 +19,8 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        DataBuilder dataBuilder = new DataBuilder();
-        dataBuilder.run(args[1], "DataBuilder");
+        // DataBuilder dataBuilder = new DataBuilder();
+        // dataBuilder.run(args[1], "DataBuilder");
         DataCleaner dataCleaner = new DataCleaner();
         dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
 
