@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Random;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -28,11 +30,13 @@ public class JobManager {
     public static class LinearRegressionMapper extends Mapper<Object, Text, Text, Text>{
         private double[][] xModel;
         private String model;
+        private Set<String> xSet;
 
         @Override
         public void setup(Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
             model = getModel(conf);
+            xSet = getModelSet(model);
             xModel = convertModel(model);
         }
 
@@ -45,19 +49,21 @@ public class JobManager {
 
             while ((line = buff.readLine()) != null) {
                 tokens = line.split("\\t");
-                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+                if (!xSet.contains(tokens[0])) {
+                    OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
 
-                // Converts yString to double[], and x tokens to double[][].
-                // Combines x and y data and adds them to regression object.
-                if (".".equals(model)) {
-                    xModel =  new double[tokens.length - 1][1];
-                }
-                double[][] xTotal = ConfSet.combineX(tokens, xModel); // Make sure to +1 index
-                regression.newSampleData(ConfSet.convertY(mapKey), xTotal);
-                try {
-                    calculateSignificance(regression, context, mapKey, tokens, model);
-                } catch (Exception e) {
-                    System.err.println("Invalid significance generated.");
+                    // Converts yString to double[], and x tokens to double[][].
+                    // Combines x and y data and adds them to regression object.
+                    if (".".equals(model)) {
+                        xModel =  new double[tokens.length - 1][1];
+                    }
+                    double[][] xTotal = ConfSet.combineX(tokens, xModel); // Make sure to +1 index
+                    regression.newSampleData(ConfSet.convertY(mapKey), xTotal);
+                    try {
+                        calculateSignificance(regression, context, mapKey, tokens, model);
+                    } catch (Exception e) {
+                        System.err.println("Invalid significance generated.");
+                    }
                 }
             }
             buff.close();
@@ -70,6 +76,15 @@ public class JobManager {
             } else {
                 return ".";
             }
+        }
+
+        public Set<String> getModelSet(String model) {
+            Set<String> xSet = new HashSet<String>();
+            String[] snpStrings = model.split("\\r?\\n");
+            for (int i = 0; i < snpStrings.length; i++) {
+                xSet.add(snpStrings[i].split(",")[0]);
+            }
+            return xSet;
         }
 
         public double[][] convertModel(String model) {
