@@ -49,7 +49,11 @@ public class DataBuilder {
     }
 
     public static class ElementReducer extends Reducer<Text, Text, Text, Text> {
-
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            for (Text value: values) {
+                context.write(key, value);
+            }
+        }
     }
 
     public static class ElementMapper extends Mapper<Text, Text, Text, NullWritable>{
