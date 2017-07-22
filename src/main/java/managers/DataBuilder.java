@@ -72,7 +72,7 @@ public class DataBuilder {
                 outString += "\t" + outDoubles[i];
             }
             context.write(new Text(outString), NullWritable.get());
-            context.write(key, NullWritable.get());
+            // context.write(key, NullWritable.get());
         }
     }
 
