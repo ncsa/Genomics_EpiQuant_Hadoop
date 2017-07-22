@@ -105,13 +105,18 @@ public class SEMSHadoop {
     public static boolean isDone(String baseDir) throws IOException{
         Path path = new Path("hdfs:" + baseDir + "significance-r-00000");
         FileSystem fs = FileSystem.get(new Configuration());
-        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
-        String line = buff.readLine().trim();
-        buff.close();
-        fs.close();
-        if (Double.parseDouble(line) < 0.05) {
-            return false;
+        if (fs.exists(path)) {
+            BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
+            String line = buff.readLine().trim();
+            buff.close();
+            fs.close();
+            if (Double.parseDouble(line) < 0.05) {
+                return false;
+            }
+        } else {
+            
         }
+
         return true;
     }
 
