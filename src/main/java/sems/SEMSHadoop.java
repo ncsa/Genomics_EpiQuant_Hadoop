@@ -15,8 +15,9 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        System.out.println(countLines("/user/rchui2/data/snps.txt"));
+        System.out.println(countLines(args[1]));
         System.exit(0);
+
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
         ArrayList<int[]> splits = new ArrayList<int[]>();
