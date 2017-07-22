@@ -122,6 +122,12 @@ public class JobManager {
 
     public static class MinimumSignificanceReducer extends Reducer<Text, Text, Text, Text> {
         private Text minX = new Text();
+        private MultipleOutputs<Text, NullWritable> mos;
+
+        @Override
+        public void setup(Context context) throws IOException, InterruptedException {
+            mos = new MultipleOutputs<Text, NullWritable>(context);
+        }
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             double tempMinP = 0.05;
@@ -232,7 +238,7 @@ public class JobManager {
         MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, NullWritable.class);
         MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, NullWritable.class);
         
-        job.submit();
+        job.waitForCompletion(true);
         return job;
     }
 }
