@@ -19,7 +19,7 @@ public class SEMSHadoop {
         ArrayList<Job> jobList = new ArrayList<Job>();
         ArrayList<int[]> splits = new ArrayList<int[]>();
         long start = System.nanoTime();
-        String message, baseDir;
+        String message, baseDir, prevDir;
 
         // Submit jobs by to the job list.
         JobManager jobManager = new JobManager();
@@ -49,12 +49,12 @@ public class SEMSHadoop {
                     runningTime(start, jobList.size(), false, message);
                     jobList.remove(i);
 
+                    prevDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] +  "/";
                     splits.get(i)[1]++;
                     baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] +  "/";
                     if (!isDone(baseDir)) {
                         message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                         runningTime(start, jobList.size(), false, message);
-                        String prevDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + (splits.get(i)[1] - 1) +  "/";
                         jobList.add(jobManager.run(args[1], phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
                         phenoList.add(phenoList.remove(i));
                         splits.add(splits.remove(i));
