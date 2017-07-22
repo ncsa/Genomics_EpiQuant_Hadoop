@@ -58,6 +58,9 @@ public class SEMSHadoop {
                         jobList.add(jobManager.run(args[1], phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
                         phenoList.add(phenoList.remove(i));
                         splits.add(splits.remove(i));
+                    } else {
+                        phenoList.remove(i);
+                        splits.remove(i);
                     }
 
                     i--;
@@ -113,10 +116,7 @@ public class SEMSHadoop {
             if (Double.parseDouble(line) < 0.05) {
                 return false;
             }
-        } else {
-            
         }
-
         return true;
     }
 
