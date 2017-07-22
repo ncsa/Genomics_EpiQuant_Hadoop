@@ -1,6 +1,7 @@
 package sems;
 
 import managers.DataBuilder;
+import managers.DataCleaner;
 import managers.JobManager;
 
 import java.io.BufferedReader;
@@ -20,6 +21,8 @@ public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         DataBuilder dataBuilder = new DataBuilder();
         dataBuilder.run(args[1], "DataBuilder");
+        DataCleaner dataCleaner = new DataCleaner();
+        dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
         System.exit(0);
 
         ArrayList<String> phenoList = getPhenotypes(args);
