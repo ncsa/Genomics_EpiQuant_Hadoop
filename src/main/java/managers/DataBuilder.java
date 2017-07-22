@@ -38,6 +38,7 @@ public class DataBuilder {
             while ((line = buff.readLine()) != null) {
             
             }
+        }
     }
 
     public static class ElementReducer extends Reducer<Text, Text, Text, Text> {
