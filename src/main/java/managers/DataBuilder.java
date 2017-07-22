@@ -61,8 +61,8 @@ public class DataBuilder {
 
     public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable> {
 
-        @Override
-        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        // @Override
+        public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
             // String[] fileTokens = key.toString().split("\\t");
             // String[] valueTokens = value.toString().split("\\t");
             // double[] outDoubles = new double[fileTokens.length - 1];
