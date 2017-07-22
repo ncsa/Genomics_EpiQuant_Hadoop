@@ -26,14 +26,14 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class JobManager {
     public static class LinearRegressionMapper extends Mapper<Object, Text, Text, Text>{
-        private double[][] x;
+        private double[][] xModel;
         private String model;
 
         @Override
         public void setup(Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
             model = getModel(conf);
-            x = convertModel(model);
+            xModel = convertModel(model);
         }
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -49,8 +49,11 @@ public class JobManager {
 
                 // Converts yString to double[], and x tokens to double[][].
                 // Combines x and y data and adds them to regression object.
-                x = ConfSet.combineX(tokens, x); // Make sure to +1 index
-                regression.newSampleData(ConfSet.convertY(mapKey), x);
+                if (".".equals(model)) {
+                    xModel =  new double[tokens.length - 1][1];
+                }
+                double[][] xTotal = ConfSet.combineX(tokens, xModel); // Make sure to +1 index
+                regression.newSampleData(ConfSet.convertY(mapKey), xTotal);
                 try {
                     calculateSignificance(regression, context, mapKey, tokens, model);
                 } catch (Exception e) {
