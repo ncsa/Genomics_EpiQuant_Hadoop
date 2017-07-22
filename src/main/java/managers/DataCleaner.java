@@ -65,7 +65,7 @@ public class DataCleaner {
         ChainReducer.setReducer(job, ElementReducer.class, Text.class, LongWritable.class, Text.class, LongWritable.class, chainReducerConf);
         ChainReducer.addMapper(job, ElementMapper.class, Text.class, LongWritable.class, Text.class, NullWritable.class, chainReducerConf);
 
-        job.setNumReduceTasks(15);
+        // job.setNumReduceTasks(15);
         job.waitForCompletion(true);
         return job;
     }
