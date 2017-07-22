@@ -52,7 +52,7 @@ public class SEMSHadoop {
                     prevDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] +  "/";
                     splits.get(i)[1]++;
                     baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] +  "/";
-                    if (!isDone(baseDir)) {
+                    if (!isDone(prevDir)) {
                         message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                         runningTime(start, jobList.size(), false, message);
                         jobList.add(jobManager.run(args[1], phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
