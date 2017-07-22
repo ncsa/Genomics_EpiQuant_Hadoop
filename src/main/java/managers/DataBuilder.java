@@ -1,19 +1,13 @@
 package managers;
 
-import utilities.ConfSet;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Random;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -23,11 +17,6 @@ import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.commons.math3.util.FastMath;
-import org.apache.commons.math3.distribution.TDistribution;
-import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class DataBuilder {
     public static class TokenMapper extends Mapper<Object, Text, Text, Text>{
