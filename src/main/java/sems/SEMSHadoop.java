@@ -1,5 +1,6 @@
 package sems;
 
+import managers.DataBuilder;
 import managers.JobManager;
 
 import java.io.BufferedReader;
@@ -15,7 +16,8 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        System.out.println(countLines(args[1]));
+        DataBuilder dataBuilder = new DataBuilder();
+        dataBuilder.run(args[1], "DataBuilder");
         System.exit(0);
 
         ArrayList<String> phenoList = getPhenotypes(args);
@@ -154,16 +156,5 @@ public class SEMSHadoop {
             System.exit(1);
         }
         return null;
-    }
-
-    public static long countLines(String filePath) throws IOException {
-        Path path = new Path("hdfs:" + filePath);
-        FileSystem fs = FileSystem.get(new Configuration());
-        BufferedReader buff = new BufferedReader(new InputStreamReader(fs.open(path)));
-        long count = 0;
-        while (buff.readLine() != null) {
-            count++;
-        }
-        return count;
     }
 }
