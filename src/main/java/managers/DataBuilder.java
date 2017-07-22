@@ -59,39 +59,33 @@ public class DataBuilder {
         }
     }
 
-    public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable> {
-        public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
-            // String[] fileTokens = key.toString().split("\\t");
-            // String[] valueTokens = values.toString().split("\\t");
-            // double[] outDoubles = new double[fileTokens.length - 1];
-            // for (int i = 0; i < outDoubles.length; i++) {
-            //     outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
-            // }
-            // String outString = fileTokens[0] + ":::" + valueTokens[0];
-            // for (int i = 0; i < outDoubles.length; i++) {
-            //     outString += "\t" + outDoubles[i];
-            // }
+    public static class ElementMapper extends Mapper<Text, Text, Text, NullWritable>{
+        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            String[] fileTokens = key.toString().split("\\t");
+            String[] valueTokens = value.toString().split("\\t");
+            double[] outDoubles = new double[fileTokens.length - 1];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
+            }
+            String outString = fileTokens[0] + ":::" + valueTokens[0];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outString += "\t" + outDoubles[i];
+            }
             context.write(new Text("Hello World"), NullWritable.get());
-            // context.write(key, NullWritable.get());
+            context.write(key, NullWritable.get());
         }
     }
 
     public Job run(String inputPath, String outputDir) throws Exception {
         Configuration conf = new Configuration();
         conf.set("path", inputPath);
-        conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", ":::");
         Job job = Job.getInstance(conf, "data builder");
 
         job.setJarByClass(DataBuilder.class);
 
-        job.setMapperClass(TokenMapper.class);
-        job.setCombinerClass(ElementReducer.class);
-        job.setReducerClass(ElementReducer.class);
-
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(NullWritable.class);
+        Configuration chainMapperConf = new Configuration(false);
+        ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
+        ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputDir));
