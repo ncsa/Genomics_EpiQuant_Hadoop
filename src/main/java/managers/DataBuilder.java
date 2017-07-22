@@ -59,24 +59,22 @@ public class DataBuilder {
         }
     }
 
-    public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable>{
+    public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable> {
 
         @Override
-        public void reduce(Text key, Iterable<Text> value, Context context) throws IOException, InterruptedException {
-            for (Text val: value) {
-                // String[] fileTokens = key.toString().split("\\t");
-                // String[] valueTokens = value.toString().split("\\t");
-                // double[] outDoubles = new double[fileTokens.length - 1];
-                // for (int i = 0; i < outDoubles.length; i++) {
-                //     outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
-                // }
-                // String outString = fileTokens[0] + ":::" + valueTokens[0];
-                // for (int i = 0; i < outDoubles.length; i++) {
-                //     outString += "\t" + outDoubles[i];
-                // }
-                context.write(new Text("Hello World"), NullWritable.get());
-                // context.write(key, NullWritable.get());
-            }
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            // String[] fileTokens = key.toString().split("\\t");
+            // String[] valueTokens = value.toString().split("\\t");
+            // double[] outDoubles = new double[fileTokens.length - 1];
+            // for (int i = 0; i < outDoubles.length; i++) {
+            //     outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
+            // }
+            // String outString = fileTokens[0] + ":::" + valueTokens[0];
+            // for (int i = 0; i < outDoubles.length; i++) {
+            //     outString += "\t" + outDoubles[i];
+            // }
+            context.write(new Text("Hello World"), NullWritable.get());
+            // context.write(key, NullWritable.get());
         }
     }
 
