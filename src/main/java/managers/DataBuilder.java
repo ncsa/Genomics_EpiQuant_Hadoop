@@ -59,8 +59,8 @@ public class DataBuilder {
         }
     }
 
-    public static class ElementMapper extends Mapper<Text, Text, Text, NullWritable>{
-        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+    public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable>{
+        public void reduce(Text key, Text value, Context context) throws IOException, InterruptedException {
             String[] fileTokens = key.toString().split("\\t");
             String[] valueTokens = value.toString().split("\\t");
             double[] outDoubles = new double[fileTokens.length - 1];
@@ -85,7 +85,9 @@ public class DataBuilder {
 
         Configuration chainMapperConf = new Configuration(false);
         ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
-        ChainMapper.addMapper(job, ElementMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainMapperConf);
+
+        Configuration chainReducerConf = new Configuration(false);
+        ChainReducer.setReducer(job, ElementReducer.class, Text.class, Text.class, Text.class, NullWritable.class, chainReducerConf);
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputDir));
