@@ -14,6 +14,8 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.Configuration;
 
+//TODO: Run a wordcount on DataBuilder
+
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
         DataBuilder dataBuilder = new DataBuilder();
