@@ -48,36 +48,38 @@ public class DataBuilder {
             String fileLine;
 
             while ((fileLine = fileBuff.readLine()) != null) {
-                String[] fileTokens = fileLine.split("\\t");
-                String fileString = fileTokens[0];
-                for (int i = 0; i < fileTokens.length; i++) {
-                    fileString += "," + fileTokens[i];
-                }
                 BufferedReader valueBuff = new BufferedReader(new StringReader(value.toString()));
                 String valueLine;
                 while ((valueLine = valueBuff.readLine()) != null) {
                     if (!valueLine.equals(fileLine)) {
-                        String[] valueTokens = valueLine.split("\\t");
-                        String valueString = valueTokens[0];
-                        for (int j = 0; j < valueTokens.length; j++) {
-                            valueString += "," + valueTokens[j];
-                        }
-                        context.write(new Text(fileString), new Text(valueString));
+                        context.write(new Text(fileLine), new Text(valueLine));
                     }
                 }
             }
         }
     }
 
-    public static class ElementReducer extends Reducer<Text, Text, Text, Text> {
+    public static class ElementReducer extends Reducer<Text, Text, Text, NullWritable> {
         public void reduce(Text key, Text values, Context context) throws IOException, InterruptedException {
-            context.write(key, values);
+            context.write(key, NullWritable.get());
+            String[] fileTokens = key.toString().split("\\t");
+            String[] valueTokens = values.toString().split("\\t");
+            double[] outDoubles = new double[fileTokens.length - 1];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outDoubles[i] = Double.parseDouble(fileTokens[i + 1]) * Double.parseDouble(valueTokens[i + 1]);
+            }
+            String outString = fileTokens[0] + ":::" + valueTokens[0];
+            for (int i = 0; i < outDoubles.length; i++) {
+                outString += "\t" + outDoubles[i];
+            }
+            context.write(new Text(outString), NullWritable.get());
         }
     }
 
     public Job run(String inputPath, String outputDir) throws Exception {
         Configuration conf = new Configuration();
         conf.set("path", inputPath);
+        conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", ":::");
         Job job = Job.getInstance(conf, "data builder");
 
         job.setJarByClass(DataBuilder.class);
@@ -89,7 +91,7 @@ public class DataBuilder {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputValueClass(NullWritable.class);
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputDir));
