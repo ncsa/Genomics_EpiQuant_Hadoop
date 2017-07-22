@@ -48,11 +48,21 @@ public class DataBuilder {
             String fileLine;
 
             while ((fileLine = fileBuff.readLine()) != null) {
+                String[] fileTokens = fileLine.split("\\t");
+                String fileString = fileTokens[0];
+                for (int i = 0; i < fileTokens.length; i++) {
+                    fileString += "," + fileTokens[i];
+                }
                 BufferedReader valueBuff = new BufferedReader(new StringReader(value.toString()));
                 String valueLine;
                 while ((valueLine = valueBuff.readLine()) != null) {
                     if (!valueLine.equals(fileLine)) {
-                        context.write(new Text(fileLine), new Text(valueLine));
+                        String[] valueTokens = valueLine.split("\\t");
+                        String valueString = valueTokens[0];
+                        for (int j = 0; j < valueTokens.length; j++) {
+                            valueString += "," + valueTokens[j];
+                        }
+                        context.write(new Text(fileString), new Text(valueString));
                     }
                 }
             }
@@ -69,6 +79,7 @@ public class DataBuilder {
         Configuration conf = new Configuration();
         conf.set("path", inputPath);
         Job job = Job.getInstance(conf, "data builder");
+
         job.setJarByClass(DataBuilder.class);
 
         job.setMapperClass(TokenMapper.class);
