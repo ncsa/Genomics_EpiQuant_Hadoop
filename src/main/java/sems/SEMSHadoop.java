@@ -19,16 +19,26 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
+        long start = System.nanoTime();
+        String message, baseDir, prevDir;
+
+        message = " [Task = Adding DataBuilder]";
+        runningTime(start, 1, false, message);
         DataBuilder dataBuilder = new DataBuilder();
         dataBuilder.run(args[1], "DataBuilder");
+        message = " [Task = Removing DataBuilder]";
+        runningTime(start, 1, false, message);
+
+        message = " [Task = Adding DataCleaner]";
+        runningTime(start, 1, false, message);
         DataCleaner dataCleaner = new DataCleaner();
         dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
+        message = " [Task = Removing DataCleaner]";
+        runningTime(start, 1, false, message);
 
         ArrayList<String> phenoList = getPhenotypes(args);
         ArrayList<Job> jobList = new ArrayList<Job>();
         ArrayList<int[]> splits = new ArrayList<int[]>();
-        long start = System.nanoTime();
-        String message, baseDir, prevDir;
 
         // Submit jobs by to the job list.
         JobManager jobManager = new JobManager();
