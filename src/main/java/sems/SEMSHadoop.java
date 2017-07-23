@@ -41,7 +41,7 @@ public class SEMSHadoop {
             runningTime(start, jobList.size(), false, message);
 
             baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
-            jobList.add(jobManager.run("/user/rchui2/DataCleaner", phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
+            jobList.add(jobManager.run("/user/rchui2/DataCleaner/part-r-00000", phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
             }
 
         boolean running = true;
@@ -64,7 +64,7 @@ public class SEMSHadoop {
                     if (!isDone(prevDir)) {
                         message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                         runningTime(start, jobList.size(), false, message);
-                        jobList.add(jobManager.run("/user/rchui2/DataCleaner", phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
+                        jobList.add(jobManager.run("/user/rchui2/DataCleaner/part-r-00000", phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
                         phenoList.add(phenoList.remove(i));
                         splits.add(splits.remove(i));
                     } else {
