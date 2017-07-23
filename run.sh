@@ -2,7 +2,7 @@ git pull
 mvn clean
 mvn compile
 mvn package
-chmod -R 755 target/
+chmod -R 755 ./
 hadoop fs -rm -r *.Split*
 hadoop fs -rm -r DataBuilder
 hadoop fs -rm -r DataCleaner
