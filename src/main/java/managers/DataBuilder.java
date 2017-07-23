@@ -77,6 +77,8 @@ public class DataBuilder {
         Configuration conf = new Configuration();
         conf.set("path", inputPath);
         Job job = Job.getInstance(conf, "data builder");
+
+        FileInputFormat.setInputDirRecursive(job, true);
         FileInputFormat.addInputPath(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputDir));
 

@@ -215,6 +215,8 @@ public class JobManager {
         conf.set("model", model);
         conf.set("y", y);
         Job job = Job.getInstance(conf, "job manager");
+
+        FileInputFormat.setInputDirRecursive(job, true);
         FileInputFormat.addInputPath(job, new Path(jobPath));
         FileOutputFormat.setOutputPath(job, new Path("Phenotype-" + phenotype + ".Split-" + split));
 
