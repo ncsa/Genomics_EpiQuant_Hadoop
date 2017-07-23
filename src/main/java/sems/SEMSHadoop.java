@@ -19,8 +19,8 @@ import org.apache.hadoop.conf.Configuration;
 
 public class SEMSHadoop {
     public static void main(String[] args) throws Exception {
-        // DataBuilder dataBuilder = new DataBuilder();
-        // dataBuilder.run(args[1], "DataBuilder");
+        DataBuilder dataBuilder = new DataBuilder();
+        dataBuilder.run(args[1], "DataBuilder");
         DataCleaner dataCleaner = new DataCleaner();
         dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
 
@@ -64,7 +64,7 @@ public class SEMSHadoop {
                     if (!isDone(prevDir)) {
                         message = " [Task = Adding P-" + splits.get(i)[0] + ".S-" + splits.get(i)[1] + "]";
                         runningTime(start, jobList.size(), false, message);
-                        jobList.add(jobManager.run(args[1], phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
+                        jobList.add(jobManager.run("/user/rchui2/DataCleaner/part-r-00000", phenoList.get(i), getModel(prevDir), baseDir, splits.get(i)[0], splits.get(i)[1]));
                         phenoList.add(phenoList.remove(i));
                         splits.add(splits.remove(i));
                     } else {
