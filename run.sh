@@ -1,3 +1,5 @@
+yarn application -list | awk '$5=="rchui2"{print $1}' | xargs -L 1 -n 1 -P 8 yarn application -kill 
+
 # Gets the newest code.
 git pull
 
