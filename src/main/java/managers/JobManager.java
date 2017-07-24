@@ -330,8 +330,8 @@ public class JobManager {
         MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, NullWritable.class);
         MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, NullWritable.class);
         
-        // job.waitForCompletion(true);
-        job.submit();
+        job.waitForCompletion(true);
+        // job.submit();
         return job;
     }
 }
