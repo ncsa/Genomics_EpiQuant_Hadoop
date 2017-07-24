@@ -29,21 +29,21 @@ public class SEMSHadoop {
         long start = System.nanoTime();
         String message, baseDir, prevDir;
 
-        // // Compute all possible pair-wise elements.
-        // message = " [Task = Adding DataBuilder]";
-        // runningTime(start, 1, false, message);
-        // DataBuilder dataBuilder = new DataBuilder();
-        // dataBuilder.run(args[1], "DataBuilder");
-        // message = " [Task = Removing DataBuilder]";
-        // runningTime(start, 1, false, message);
+        // Compute all possible pair-wise elements.
+        message = " [Task = Adding DataBuilder]";
+        runningTime(start, 1, false, message);
+        DataBuilder dataBuilder = new DataBuilder();
+        dataBuilder.run(args[1], "DataBuilder");
+        message = " [Task = Removing DataBuilder]";
+        runningTime(start, 1, false, message);
 
-        // // Remove pair-wise duplicates.
-        // message = " [Task = Adding DataCleaner]";
-        // runningTime(start, 1, false, message);
-        // DataCleaner dataCleaner = new DataCleaner();
-        // dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
-        // message = " [Task = Removing DataCleaner]";
-        // runningTime(start, 1, false, message);
+        // Remove pair-wise duplicates.
+        message = " [Task = Adding DataCleaner]";
+        runningTime(start, 1, false, message);
+        DataCleaner dataCleaner = new DataCleaner();
+        dataCleaner.run("/user/rchui2/DataBuilder", "DataCleaner");
+        message = " [Task = Removing DataCleaner]";
+        runningTime(start, 1, false, message);
 
         // Get the phenotypes to iterate over.
         ArrayList<String> phenoList = getPhenotypes(args);
