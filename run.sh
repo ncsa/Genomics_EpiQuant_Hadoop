@@ -22,4 +22,3 @@ echo $HADOOP_CLASSPATH
 
 # Run map reduce job.
 hadoop jar target/SEMS-Hadoop-0.1.0.jar sems.SEMSHadoop /user/rchui2/data/snps.txt /user/rchui2/pheno/pheno.1.txt
-# hadoop fs -cat Phenotype-*.Split-*/part-r-00000
