@@ -10,11 +10,11 @@ mvn package
 chmod -R 755 ./
 
 # Remove older runs.
-hadoop fs -rm -r *.Split*
-hadoop fs -rm -r DataBuilder
-hadoop fs -rm -r DataCleaner
+# hadoop fs -rm -r DataBuilder
+# hadoop fs -rm -r DataCleaner
 hadoop fs -rm -r .staging/*
 hadoop fs -rm -r .Trash/*
+hadoop fs -rm -r *.Split*
 
 # Set global HADOOP_CLASSPATH for jar access.
 export HADOOP_CLASSPATH=/ui/ncsa/rchui2/SEMS-Hadoop/target/SEMS-Hadoop-0.1.0.jar
