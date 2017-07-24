@@ -149,7 +149,7 @@ public class DataBuilder {
         ChainReducer.setReducer(job, ElementReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ElementMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainReducerConf);
 
-        job.setNumReduceTasks(2);
+        job.setNumReduceTasks(3);
         job.waitForCompletion(true);
         return job;
     }
