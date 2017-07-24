@@ -10,19 +10,19 @@ Delimiter ("\t")
 6. Backward Manager mapreduce
 
 ## SEMSHadoop.java
-- [ ] Make sure to fix absolute path in baseDir
-- [ ] Job re-adder
-    - [ ] Validate
+- [x] Make sure to fix absolute path in baseDir
+- [x] Job re-adder
+    - [x] Validate
 - [ ] Job directory remover
     - [ ] Validate
-- [ ] Job completion validator
-    - [ ] Validate
+- [x] Job completion validator
+    - [x] Validate
 - [x] Fix data set to include headers. - Not going to do this
 
 ## JobManager.java
 - [x] Linear Regression
     - [ ] Validate
-- [ ] Multi Linear Regression
+- [x] Multi Linear Regression
     - [ ] Validate
 - [x] Convert lines to double[]
     - [x] Validate
@@ -30,13 +30,13 @@ Delimiter ("\t")
 ## Model.java
 - [x] Read in x's
     - [x] Validate
-- [ ] Write out signficance and x.
-    - [ ] Validate
+- [x] Write out signficance and x.
+    - [x] Validate
 
 ## ConfSet.java
 - [x] conf.get to bring in y values
     - [x] Validate
 - [x] New conf.get to bring in x values
-    - [ ] Validate
+    - [x] Validate
 - [x] Build set of included x values
-    - [ ] Validate
+    - [x] Validate
