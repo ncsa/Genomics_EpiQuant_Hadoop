@@ -321,6 +321,8 @@ public class JobManager {
         Configuration chainMapperConf = new Configuration(false);
         ChainMapper.addMapper(job, LinearRegressionMapper.class, Object.class, Text.class, Text.class, Text.class, chainMapperConf);
 
+        job.setCombinerClass(MinimumSignificanceReducer.class);
+
         Configuration chainReducerConf = new Configuration(false);
         ChainReducer.setReducer(job, MinimumSignificanceReducer.class, Text.class, Text.class, Text.class, Text.class, chainReducerConf);
         ChainReducer.addMapper(job, ModelMapper.class, Text.class, Text.class, Text.class, NullWritable.class, chainReducerConf);
@@ -328,7 +330,7 @@ public class JobManager {
         MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, NullWritable.class);
         MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, NullWritable.class);
         
-        job.submit();
+        job.waitForCompletion(true);
         return job;
     }
 }

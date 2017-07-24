@@ -96,6 +96,8 @@ public class DataCleaner {
         Configuration chainMapperConf = new Configuration(false);
         ChainMapper.addMapper(job, TokenMapper.class, Object.class, Text.class, Text.class, LongWritable.class, chainMapperConf);
 
+        job.setCombinerClass(ElementReducer.class);
+
         Configuration chainReducerConf = new Configuration(false);
         ChainReducer.setReducer(job, ElementReducer.class, Text.class, LongWritable.class, Text.class, LongWritable.class, chainReducerConf);
         ChainReducer.addMapper(job, ElementMapper.class, Text.class, LongWritable.class, Text.class, NullWritable.class, chainReducerConf);
