@@ -188,6 +188,9 @@ public class SEMSHadoop {
         while ((line = buff.readLine()) != null) {
             model += "\n" + line;
         }
+        if ("".equals(model) || model == null || model.isEmpty()) {
+            model = ".";
+        }
         return model;
     }
 
