@@ -330,9 +330,9 @@ public class JobManager {
         MultipleOutputs.addNamedOutput(job, "significance", TextOutputFormat.class, Text.class, NullWritable.class);
         MultipleOutputs.addNamedOutput(job, "model", TextOutputFormat.class, Text.class, NullWritable.class);
         
-        // job.waitForCompletion(true);
-        job.submit();
-        job.monitorAndPrintJob();
+        job.waitForCompletion(false);
+        // job.submit();
+        // job.monitorAndPrintJob();
         return job;
     }
 }
