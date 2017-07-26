@@ -332,6 +332,7 @@ public class JobManager {
         
         // job.waitForCompletion(true);
         job.submit();
+        job.monitorAndPrintJob();
         return job;
     }
 }
