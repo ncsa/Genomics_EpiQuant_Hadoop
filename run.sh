@@ -23,4 +23,4 @@ export HADOOP_CLASSPATH=/ui/ncsa/rchui2/SEMS-Hadoop/target/SEMS-Hadoop-0.1.0.jar
 echo $HADOOP_CLASSPATH
 
 # Run map reduce job.
-hadoop jar target/SEMS-Hadoop-0.1.0.jar sems.SEMSHadoop /user/rchui2/data/snps.txt /user/rchui2/pheno/pheno.2.test.txt
+hadoop jar target/SEMS-Hadoop-0.1.0.jar sems.SEMSHadoop /user/rchui2/data/snps.txt /user/rchui2/pheno/pheno.2.txt
