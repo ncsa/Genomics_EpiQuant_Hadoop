@@ -12,3 +12,5 @@ model of epistatic interactions between SNP's and phenotypes.
 A bash script is included to build, package, and run SEMS-Hadoop. Simply call
 
     ./run.sh
+
+Modify run.sh to use different files and change file paths.
