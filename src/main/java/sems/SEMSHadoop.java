@@ -62,7 +62,7 @@ public class SEMSHadoop {
 
             baseDir = "/user/rchui2/Phenotype-" + splits.get(i)[0] + ".Split-" + splits.get(i)[1] + "/";
             jobList.add(jobManager.run("/user/rchui2/DataCleaner/part-r-00000", phenoList.get(i), ".", baseDir, splits.get(i)[0], splits.get(i)[1]));
-            }
+        }
 
         boolean running = true;
 
